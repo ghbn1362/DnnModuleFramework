@@ -92,3 +92,12 @@ https://github.com/ghbn1362
 
 Contributions, suggestions and improvements are welcome.
 Feel free to submit Issues or Pull Requests.
+
+
+## License
+
+This project is licensed for **non-commercial use only**.
+
+Commercial use requires prior written permission from the author.
+
+See the LICENSE file for details.
