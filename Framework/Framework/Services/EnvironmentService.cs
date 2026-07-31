@@ -12,8 +12,8 @@ namespace DotNetNuke.Modules.Framework.Services
     /// </summary>
     public class EnvironmentService : IEnvironmentService
     {
-        private readonly ModuleDefinition _definition;
-        public EnvironmentService(ModuleDefinition definition)
+        private readonly Core.Module.ModuleDefinition _definition;
+        public EnvironmentService(Core.Module.ModuleDefinition definition)
         {
             _definition = definition;
         }

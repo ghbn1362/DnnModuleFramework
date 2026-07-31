@@ -7,7 +7,7 @@ namespace DotNetNuke.Modules.Framework.Core.Skin
 {
     public sealed class DefaultSkinDefinition : SkinDefinition
     {
-        public DefaultSkinDefinition(ModuleDefinition definition)
+        public DefaultSkinDefinition(Core.Module.ModuleDefinition definition)
         : base(definition)
         {
         }

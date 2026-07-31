@@ -18,5 +18,6 @@ namespace DotNetNuke.Modules.Framework.Core.Module
         public string Page { get; set; }
         public string LocalResourceFile { get; set; }
         public PortalSettings PortalSettings { get; set; }
+
     }
 }

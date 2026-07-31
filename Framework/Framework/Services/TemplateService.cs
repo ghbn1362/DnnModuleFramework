@@ -12,8 +12,8 @@ namespace DotNetNuke.Modules.Framework.Services
     /// </summary>
     public class TemplateService : ITemplateService
     {
-        private readonly ModuleDefinition _definition;
-        public TemplateService(ModuleDefinition definition)
+        private readonly Core.Module.ModuleDefinition _definition;
+        public TemplateService(Core.Module.ModuleDefinition definition)
         {
             _definition = definition;
         }

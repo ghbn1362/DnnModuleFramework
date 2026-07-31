@@ -4,8 +4,8 @@ namespace DotNetNuke.Modules.Framework.Services
 {
     public class LocalizationService : ILocalizationService
     {
-        private readonly ModuleDefinition _definition;
-        public LocalizationService(ModuleDefinition definition)
+        private readonly Core.Module.ModuleDefinition _definition;
+        public LocalizationService(Core.Module.ModuleDefinition definition)
         {
             _definition = definition;
         }

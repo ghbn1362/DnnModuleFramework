@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DotNetNuke.Modules.Framework
+namespace DotNetNuke.Modules.Framework.Core.Skin
 {
-    public class PageModel
+    public class MenuDTO
     {
         public bool IsAdmin { set; get; }
         public bool IsSuperUser { set; get; }
@@ -19,7 +19,9 @@ namespace DotNetNuke.Modules.Framework
 
 
         public string Page { set; get; }
+        public string SubPage { set; get; }
+        public string SkinPath { set; get; }
         public string LocalResourceFile { set; get; }
-        public DotNetNuke.Entities.Portals.PortalSettings PortalSettings { set; get; }
+        public bool IsRightToLeft { get { return System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft; } }
     }
 }

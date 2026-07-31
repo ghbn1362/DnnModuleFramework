@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace DotNetNuke.Modules.Framework
+namespace DotNetNuke.Modules.Framework.Core.Module
 {
     public sealed class ModuleDefinition
     {

@@ -12,8 +12,8 @@ namespace DotNetNuke.Modules.Framework.Services
     /// </summary>
     public class ResourceService : IResourceService
     {
-        private readonly ModuleDefinition _definition;
-        public ResourceService(ModuleDefinition definition)
+        private readonly Core.Module.ModuleDefinition _definition;
+        public ResourceService(Core.Module.ModuleDefinition definition)
         {
             _definition = definition;
         }

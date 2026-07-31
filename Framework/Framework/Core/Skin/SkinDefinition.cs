@@ -7,12 +7,12 @@ namespace DotNetNuke.Modules.Framework.Core.Skin
 {
     public abstract class SkinDefinition
     {
-        protected SkinDefinition(ModuleDefinition definition)
+        protected SkinDefinition(Core.Module.ModuleDefinition definition)
         {
             Definition = definition ?? null;
         }
 
-        protected ModuleDefinition Definition { get; }
+        protected Core.Module.ModuleDefinition Definition { get; }
 
 
         /// <summary>

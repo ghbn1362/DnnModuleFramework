@@ -123,21 +123,18 @@
     <Compile Include="Framework\Services\TemplateService.cs" />
     <Compile Include="Framework\Services\interface\ITemplateService.cs" />
     <Compile Include="Framework\Services\ServiceFactory.cs" />
-    <Compile Include="Menu\Menu.cs" />
-    <Compile Include="Menu\MenuDTO.cs" />
+    <Compile Include="Framework\Core\Skin\Menu\Menu.cs" />
+    <Compile Include="Framework\Core\Skin\Menu\MenuDTO.cs" />
     <Compile Include="Razor\DotNetNukeWebPage.cs" />
-    <Compile Include="Razor\PageModel.cs" />
     <Compile Include="Razor\RazorEngine.cs" />
-    <Compile Include="Utility\ModuleDefinition.cs" />
+    <Compile Include="Framework\Core\Module\ModuleDefinition.cs" />
     <Compile Include="Utility\Conditions.cs" />
     <Compile Include="Utility\Common.cs" />
     <Compile Include="Utility\Constants.cs" />
     <Compile Include="Utility\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Framework\Infrastructure\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

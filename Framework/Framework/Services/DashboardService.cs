@@ -10,8 +10,8 @@ namespace DotNetNuke.Modules.Framework.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly ModuleDefinition _definition;
-        public DashboardService(ModuleDefinition definition)
+        private readonly Core.Module.ModuleDefinition _definition;
+        public DashboardService(Core.Module.ModuleDefinition definition)
         {
             _definition = definition;
         }

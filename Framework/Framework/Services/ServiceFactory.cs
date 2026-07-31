@@ -16,7 +16,7 @@ namespace DotNetNuke.Modules.Framework.Services
             _overrides[typeof(TService)] = instance;
         }
 
-        public static TService Get<TService>(ModuleDefinition definition) where TService : class
+        public static TService Get<TService>(Core.Module.ModuleDefinition definition) where TService : class
         {
             if (_overrides.ContainsKey(typeof(TService)))
                 return _overrides[typeof(TService)] as TService;
