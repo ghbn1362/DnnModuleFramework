@@ -15,10 +15,13 @@ namespace DotNetNuke.Modules.Foundation
         internal const string TemplateDefaultName = "default";
         internal const string TemplateSettingsName = "Template";
 
+        internal const string SkinName = "EditSkin.ascx";
+        internal const string ContainerName = "EditContainer.ascx";
+        internal const string DefaultMenuFileName = "default.cshtml";
+
         internal const string SkinDirectory = "Skin/";
         internal const string MenuDirectory = "Menu/";
-        internal const string DefaultMenuFileName = "default.cshtml";
-        internal const string MenuLocalResourceFile = "app_localresources/EditSkin.ascx";
+        internal const string MenuLocalResourceFile = "App_LocalResources/" + SkinName;
 
         internal const string SkinMenuPath = MenuDirectory + DefaultMenuFileName;
         internal const string ModuleSkinMenuPath = SkinDirectory + SkinMenuPath;

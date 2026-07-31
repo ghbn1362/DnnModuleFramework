@@ -27,7 +27,6 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
         protected readonly IDeviceDetectionService DeviceDetectionService;
         protected readonly ILocalizationService LocalizationService;
         protected readonly IDashboardService DashboardService;
-        protected readonly ModuleInfo ModuleInfo;
 
         public ModuleBase()
         {
@@ -39,7 +38,6 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
             DeviceDetectionService = ServiceFactory.Get<IDeviceDetectionService>(Definition);
             LocalizationService = ServiceFactory.Get<ILocalizationService>(Definition);
             DashboardService = ServiceFactory.Get<IDashboardService>(Definition);
-            ModuleInfo = new ModuleInfo();
         }
 
         protected virtual void Page_Init(EventArgs e) { }

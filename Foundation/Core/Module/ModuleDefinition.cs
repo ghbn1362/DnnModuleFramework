@@ -8,17 +8,13 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 {
     public sealed class ModuleDefinition
     {
-        public string CompanyName { get; } = Constants.DefaultCompanyName;
-
+        public  string CompanyName { get; } = Constants.DefaultCompanyName;
+        public string TemplatesFolderName { get; } = Constants.DefaultTemplatesFolderName;
         public string ModuleName { get; }
-
         public string DefinitionName { get; }
-
         public string FriendlyName { get; }
-
         public bool UseDashboardSkin { get; }
 
-        public string TemplatesFolderName { get; } = Constants.DefaultTemplatesFolderName;
 
         public ModuleDefinition(
             string moduleName,
@@ -29,6 +25,22 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
             DefinitionName = definitionName;
             FriendlyName = friendlyName;
         }
+        public ModuleDefinition(
+            string moduleName,
+            string definitionName,
+            string friendlyName,
+            bool useDashboardSkin,
+            string companyName = Constants.DefaultCompanyName,
+            string templatesFolderName = Constants.DefaultTemplatesFolderName)
+        {
+            ModuleName = moduleName;
+            DefinitionName = definitionName;
+            FriendlyName = friendlyName;
+            UseDashboardSkin = useDashboardSkin;
+            CompanyName = companyName;
+            TemplatesFolderName = templatesFolderName;
+        }
+
 
         public string ModuleDirectory =>
             $"/DesktopModules/{CompanyName}/{ModuleName}/";

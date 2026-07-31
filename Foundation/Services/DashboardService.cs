@@ -29,15 +29,13 @@ namespace DotNetNuke.Modules.Foundation.Services
                 {
                     if (page.Request.Params["ctl"] == null)
                     {
-                        string SkinName = "skin/EditSkin.ascx";
-                        string ContainerName = "skin/EditContainer.ascx";
-                        string SkinSrc = moduleConfig.ControlPath + "/" + SkinName;
-                        string ContainerSrc = moduleConfig.ControlPath + "/" + ContainerName;
+                        string SkinSrc = $"{moduleConfig.ControlPath}{Constants.SkinDirectory}{Constants.SkinName}";
+                        string ContainerSrc = $"{moduleConfig.ControlPath}{Constants.SkinDirectory}{Constants.ContainerName}";
 
                         // try original approach with ControlPath if available
-                        if (File.Exists((moduleConfig.ControlPath + "/" + SkinName).MapPath()))
+                        if (File.Exists(SkinSrc.MapPath()))
                         {
-                            if (!portalSettings.ActiveTab.SkinSrc.EndsWith(SkinName))
+                            if (!portalSettings.ActiveTab.SkinSrc.EndsWith(Constants.SkinName))
                             {
                                 portalSettings.ActiveTab.SkinSrc = SkinSrc;
                                 portalSettings.ActiveTab.ContainerSrc = ContainerSrc;

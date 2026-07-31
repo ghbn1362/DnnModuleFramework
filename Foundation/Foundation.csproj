@@ -116,11 +116,11 @@
     <Compile Include="Services\interface\IEnvironmentService.cs" />
     <Compile Include="Services\ResourceService.cs" />
     <Compile Include="Services\interface\IResourceService.cs" />
+    <Compile Include="Services\ServiceFactory.cs" />
     <Compile Include="Services\TokenService.cs" />
     <Compile Include="Services\interface\ITokenService.cs" />
     <Compile Include="Services\TemplateService.cs" />
     <Compile Include="Services\interface\ITemplateService.cs" />
-    <Compile Include="Services\ServiceFactory.cs" />
     <Compile Include="Core\Skin\Menu\Menu.cs" />
     <Compile Include="Core\Skin\Menu\MenuDTO.cs" />
     <Compile Include="Razor\DotNetNukeWebPage.cs" />

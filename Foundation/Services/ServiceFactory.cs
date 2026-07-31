@@ -4,10 +4,7 @@ using DotNetNuke.Entities.Modules;
 
 namespace DotNetNuke.Modules.Foundation.Services
 {
-    /// <summary>
-    /// Simple service resolver. Replace with DI container registration in future.
-    /// </summary>
-    public static class ServiceFactory
+     public static class ServiceFactory
     {
         private static readonly Dictionary<Type, object> _overrides = new Dictionary<Type, object>();
 
