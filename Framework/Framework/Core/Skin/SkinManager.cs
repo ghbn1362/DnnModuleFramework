@@ -4,8 +4,9 @@ using DotNetNuke.UI.Skins;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client.Providers;
 using System;
+using DotNetNuke.Modules.Framework.Core.Skin;
 
-namespace DotNetNuke.Modules.Framework.Framework
+namespace DotNetNuke.Modules.Framework
 {
     public abstract class SkinManager : Skin
     {

@@ -12,7 +12,7 @@ using System.IO;
 
 namespace DotNetNuke.Modules.Framework
 {
-    public abstract class BasePage : ModuleBase
+    public abstract class BasePage : Core.Module.ModuleBase
     {
 
         private string TemplateLocalResourceFile(string file)

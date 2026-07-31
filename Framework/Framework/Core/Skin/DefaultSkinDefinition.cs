@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DotNetNuke.Modules.Framework.Framework
+namespace DotNetNuke.Modules.Framework.Core.Skin
 {
     public sealed class DefaultSkinDefinition : SkinDefinition
     {

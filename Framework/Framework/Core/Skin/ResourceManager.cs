@@ -2,7 +2,7 @@
 using DotNetNuke.Web.Client.Providers;
 using System.Web.UI;
 
-namespace DotNetNuke.Modules.Framework.Framework
+namespace DotNetNuke.Modules.Framework.Core.Skin
 {
     internal static class ResourceManager
     {

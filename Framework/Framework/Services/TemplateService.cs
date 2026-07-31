@@ -109,9 +109,9 @@ namespace DotNetNuke.Modules.Framework.Services
             }
         }
 
-        private Core.BasePageModel CreateModel(PortalSettings portalSettings, PortalModuleBase moduleConfig)
+        private Core.Module.BasePageModel CreateModel(PortalSettings portalSettings, PortalModuleBase moduleConfig)
         {
-            return new Core.BasePageModel
+            return new Core.Module.BasePageModel
             {
                 IsAdmin = System.Web.HttpContext.Current?.User?.IsInRole(portalSettings.AdministratorRoleName) ?? false,
                 IsSuperUser = portalSettings?.UserInfo?.IsSuperUser ?? false,

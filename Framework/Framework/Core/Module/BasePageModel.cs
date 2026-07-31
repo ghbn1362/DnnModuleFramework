@@ -1,6 +1,6 @@
 ﻿using DotNetNuke.Entities.Portals;
 
-namespace DotNetNuke.Modules.Framework.Core
+namespace DotNetNuke.Modules.Framework.Core.Module
 {
     /// <summary>
     /// View model used when rendering templates.

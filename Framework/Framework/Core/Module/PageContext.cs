@@ -2,7 +2,7 @@
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 
-namespace DotNetNuke.Modules.Framework.Core
+namespace DotNetNuke.Modules.Framework.Core.Module
 {
     /// <summary>
     /// A thin wrapper around ambient context (HttpContext/PortalSettings/ModuleInfo).

@@ -10,7 +10,7 @@ using DotNetNuke.Modules.Framework.Services;
 using DotNetNuke.Modules.Framework.Core;
 using System.IO;
 
-namespace DotNetNuke.Modules.Framework.Core
+namespace DotNetNuke.Modules.Framework.Core.Module
 {
     public abstract class ModuleBase : PortalModuleBase
     {
