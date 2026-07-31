@@ -8,6 +8,8 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 {
     public sealed class ModuleDefinition
     {
+        public string CompanyName { get; } = Constants.DefaultCompanyName;
+
         public string ModuleName { get; }
 
         public string DefinitionName { get; }
@@ -15,6 +17,8 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
         public string FriendlyName { get; }
 
         public bool UseDashboardSkin { get; }
+
+        public string TemplatesFolderName { get; } = Constants.DefaultTemplatesFolderName;
 
         public ModuleDefinition(
             string moduleName,
@@ -27,24 +31,24 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
         }
 
         public string ModuleDirectory =>
-            $"/DesktopModules/{Constants.CompanyName}/{ModuleName}/";
+            $"/DesktopModules/{CompanyName}/{ModuleName}/";
 
         public string SharedResourceFile =>
-            $"~/DesktopModules/{ModuleName}/App_LocalResources/SharedResources.resx";
+            $"~{ModuleDirectory}{Constants.SharedResources}";
 
         public string ControlPath =>
             "~/" + ModuleDirectory;
 
         public string ModuleVirtualPath =>
-            VirtualPathUtility.ToAbsolute("~" + ModuleDirectory);
+            VirtualPathUtility.ToAbsolute($"~{ModuleDirectory}");
 
         public string DirectoryMapPath =>
             ModuleDirectory.MapPath();
 
         public string TemplateDirectoryMapPath =>
-            Path.Combine(DirectoryMapPath, "Templates");
+            Path.Combine(DirectoryMapPath, TemplatesFolderName);
 
-        public string MenuTemplatePath => 
-            "~" + ModuleDirectory + Constants.ModuleSkinMenuPath;
+        public string MenuTemplatePath =>
+            $"~{ModuleDirectory}{Constants.ModuleSkinMenuPath}";
     }
 }

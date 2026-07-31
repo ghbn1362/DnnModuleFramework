@@ -7,7 +7,9 @@ namespace DotNetNuke.Modules.Foundation
 {
     public static class Constants
     {
-        internal const string CompanyName = "Bazrafshan";
+        internal const string DefaultCompanyName = "Bazrafshan";
+        internal const string DefaultTemplatesFolderName = "Templates";
+        internal const string SharedResources = "App_LocalResources/SharedResources.resx";
 
         internal const string TemplateManifestName = "template.config";
         internal const string TemplateDefaultName = "default";
