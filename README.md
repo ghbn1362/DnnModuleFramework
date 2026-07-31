@@ -1,631 +1,1027 @@
 # DnnModuleFoundation
 
-## Enterprise Foundation for DotNetNuke Module Development
+> A modern, extensible and lightweight application foundation for building enterprise-grade DotNetNuke (DNN) modules.
 
-DnnModuleFoundation is an architectural foundation designed to build professional, scalable, and maintainable DotNetNuke (DNN) modules.
+DnnModuleFoundation is **not a framework that replaces DNN**.
 
-The purpose of this project is not to replace DNN, but to provide a consistent development foundation on top of DNN by reducing repetitive infrastructure code, improving maintainability, and enforcing a clean development structure.
+It is a foundation that sits on top of the standard DNN module model and provides a consistent architecture for developing, maintaining and extending DNN modules while preserving the native capabilities of the DNN platform.
 
-DnnModuleFoundation provides common building blocks required for modern DNN module development, including:
-
-- Standard module architecture
-- Centralized module definition management
-- Shared base classes
-- Context management
-- Service infrastructure
-- Security foundations
-- Skin and asset management
-- Common utilities and extensions
-
-The goal is simple:
-
-> Build DNN modules faster, cleaner, and with a consistent long-term architecture.
+The primary goal of this project is to remove repetitive infrastructure code from every module and provide a clean, maintainable and highly extensible foundation that every DNN module can inherit from.
 
 ---
 
-# Why DnnModuleFoundation?
+## Philosophy
 
-Developing DNN modules without a common foundation usually creates several problems:
+Every DNN project eventually repeats the same infrastructure:
 
-- Every module has its own base classes
-- Similar infrastructure code is duplicated
-- Business logic becomes mixed with DNN implementation details
-- Module maintenance becomes harder over time
-- Developers follow different architectural approaches
-- Refactoring large solutions becomes expensive
-
-DnnModuleFoundation solves these problems by providing a reusable foundation layer.
-
-Instead of every module creating its own infrastructure, all modules can share the same architectural standards.
-
----
-
-# Main Goals
-
-DnnModuleFoundation is designed around these goals:
-
-## 1. Consistent Architecture
-
-Every module should follow the same structure and development principles.
-
-Developers should focus on business features instead of rebuilding infrastructure.
-
----
-
-## 2. Reduce DNN Coupling
-
-DNN provides many powerful APIs, but direct usage everywhere creates strong dependency.
-
-The foundation introduces abstraction layers to keep module code cleaner and easier to maintain.
-
----
-
-## 3. Increase Maintainability
-
-A module should be easy to understand and modify even years after development.
-
-The foundation provides centralized locations for:
-
-- Configuration
-- Module information
-- Context access
-- Shared services
-- Common behaviors
-
----
-
-## 4. Improve Development Speed
-
-Common requirements should already exist:
-
-- Module lifecycle handling
-- Security checks
-- Portal information access
+- Module initialization
+- Context creation
+- Service access
+- Template loading
+- Dashboard pages
 - Resource management
-- Shared utilities
+- Utility classes
+- Common helpers
+- Client-side rendering
+- Server-side rendering
+- Security checks
+- Skin management
 
-Developers should spend time building features, not repeating infrastructure.
+Instead of implementing these concerns repeatedly inside every module, DnnModuleFoundation centralizes them into a reusable core.
 
----
+Business logic belongs to your module.
 
-# Architecture Overview
-
-DnnModuleFoundation follows a layered architecture approach.
-
-DnnModuleFoundation
-
-│
-├── Foundation.Core
-│
-│ ├── Contracts
-│ ├── Interfaces
-│ ├── Definitions
-│ ├── Context Abstractions
-│ └── Shared Components
-│
-│
-├── Foundation.Infrastructure
-│
-│ ├── DNN Integration
-│ ├── Portal Services
-│ ├── Module Services
-│ ├── Security
-│ ├── Configuration
-│ └── Platform Implementations
-│
-│
-├── Foundation.Web
-│
-│ ├── Module Base Classes
-│ ├── Page Base Classes
-│ ├── User Controls
-│ ├── Skin Management
-│ └── Presentation Helpers
-│
-│
-└── Foundation.Tests
-└── Automated Tests
+Infrastructure belongs to DnnModuleFoundation.
 
 ---
 
-# Core Concepts
+## Design Goals
+
+The foundation has been designed around a few simple principles.
+
+### Preserve Native DNN
+
+A module created with this foundation must never lose the capabilities that a normal DNN module already provides.
+
+Everything available through the standard DNN development model should remain available.
+
+The foundation adds capabilities.
+
+It never replaces or hides native DNN functionality.
+
+---
+
+### Infrastructure First
+
+A module developer should focus on solving business problems.
+
+Infrastructure concerns such as context creation, template loading, dashboard rendering, utility methods and common services should already exist.
+
+---
+
+### Convention over Configuration
+
+A new module should require as little configuration as possible.
+
+Only module-specific information should be provided:
+
+- Module Name
+- Friendly Name
+- Definition Name
+- Installation Folder
+- Template Locations
+- Dashboard Settings
+- Skin Configuration
+
+Everything else should be automatically handled by the framework.
+
+---
+
+### Extensibility
+
+Every component inside the framework is designed to be replaceable or extendable.
+
+A developer should be able to customize:
+
+- Rendering
+- Templates
+- Dashboard
+- Skin
+- Services
+- Definitions
+- Helpers
+
+without modifying the framework itself.
+
+---
+
+### Low Coupling
+
+The framework intentionally keeps external dependencies to an absolute minimum.
+
+It primarily depends on the DNN platform itself.
+
+This reduces maintenance cost and avoids dependency conflicts between modules.
+
+---
+
+### Long-Term Maintainability
+
+This project is intended to become the common foundation of all future DNN modules.
+
+Therefore every architectural decision prioritizes:
+
+- readability
+- consistency
+- simplicity
+- maintainability
+- long-term evolution
+
+over short-term convenience.
+
+# Core Architecture
+
+DnnModuleFoundation is designed as a layered architecture rather than a collection of helper classes.
+
+Each layer has a single responsibility and can evolve independently without affecting the others.
+
+```
+                 +----------------------+
+                 |    DNN Platform      |
+                 +----------+-----------+
+                            |
+                 +----------v-----------+
+                 | DnnModuleFoundation  |
+                 +----------+-----------+
+                            |
+      +---------------------+----------------------+
+      |                     |                      |
++-----v-----+        +------v------+       +-------v-------+
+| Definition|        |   Context   |       | Infrastructure|
++-----------+        +-------------+       +---------------+
+      |                     |                      |
+      +-----------+---------+----------------------+
+                  |
+          +-------v--------+
+          | Module Runtime |
+          +-------+--------+
+                  |
+      +-----------+-----------+
+      |                       |
++-----v------+         +------v------+
+| Server View|         | Client View |
++------------+         +-------------+
+                  |
+          +-------v-------+
+          | Business Code |
+          +---------------+
+```
+
+The framework itself contains **no business logic**.
+
+Its responsibility is to provide a reusable infrastructure that every module can inherit from.
+
+---
+
+# Architectural Principles
+
+The architecture follows several important principles.
+
+## Single Responsibility
+
+Each component has one responsibility.
+
+For example:
+
+- ModuleDefinition describes a module.
+- PageContext describes the current execution environment.
+- ModuleBase provides infrastructure.
+- SkinDefinition manages dashboard skins.
+- Services encapsulate reusable functionality.
+- Templates render the user interface.
+
+Responsibilities never overlap.
+
+---
+
+## Open for Extension
+
+The framework is designed to be extended rather than modified.
+
+When building a new module you should rarely change the framework itself.
+
+Instead, you extend its abstractions.
+
+Typical extension points include:
+
+- Module Definition
+- Pages
+- Dashboard
+- Skins
+- Templates
+- Services
+- Helpers
+
+---
+
+## Preserve DNN
+
+The framework intentionally avoids hiding DNN.
+
+Every DNN object remains available.
+
+Examples include:
+
+- ModuleInfo
+- PortalSettings
+- UserInfo
+- Request
+- Response
+- ViewState
+- Session
+- Localization
+- SkinPath
+
+Developers familiar with DNN should immediately feel comfortable.
+
+---
+
+## Infrastructure over Inheritance
+
+The framework provides infrastructure.
+
+It does not attempt to replace the DNN programming model.
+
+A developer still writes normal DNN modules.
+
+The framework simply removes repetitive work.
+
+---
+
+# Runtime Components
+
+The framework consists of several core components.
+
+Each component has a clearly defined responsibility.
+
+```
+
+---
 
 # Module Definition
 
-Every module should have a centralized definition.
+`ModuleDefinition` is the heart of every module.
 
-Instead of spreading module information across different files, the module provides a single definition object.
+Instead of scattering constants across the project, all module metadata is centralized into a single definition object.
 
-Example:
+Typical information includes:
 
-```csharp
-public class ProductModuleDefinition : ModuleDefinition
-{
-    public override string Name =>
-        "Product";
+- Module Name
+- Friendly Name
+- Definition Name
+- Installation Folder
+- Resource Location
+- Template Location
+- Dashboard Configuration
+- Skin Configuration
+- Asset Locations
 
-    public override string Version =>
-        "1.0.0";
-}
+The framework uses this definition to configure the module runtime.
 
+This means every derived module only needs to describe itself.
 
-}
+Everything else is handled automatically.
 
-The definition is responsible for describing:
+---
 
-Module identity
-Configuration information
-Shared metadata
-Module-level settings
+# Page Context
 
-Benefits:
+The execution context is represented by `PageContext`.
 
-Centralized module information
-Easier version management
-Consistent module initialization
-Better maintainability
-Module Base Architecture
+Rather than repeatedly accessing DNN objects throughout the codebase, the framework exposes a unified context object.
 
-DnnModuleFoundation provides common base classes for module development.
+Typical runtime information includes:
 
-Example:
+- Portal
+- Module
+- User
+- Tab
+- Request
+- Settings
+- Services
 
-public class ProductView : ModuleBase
-{
+The context acts as the bridge between DNN and the framework.
 
-}
+---
 
-Instead of every module implementing the same infrastructure repeatedly, the base layer provides common capabilities.
+# Module Base
 
-Examples:
+`ModuleBase` is the common base class for module controls.
 
-Module context
-Portal information
-Security access
-Common services
-Shared behaviors
+It provides infrastructure shared by every page.
 
-This creates a consistent development experience across all modules.
+Examples include:
 
-Page Base Architecture
+- Context creation
+- Definition access
+- Service resolution
+- Utility methods
+- Common helper functions
+- Shared framework behavior
 
-Pages inside modules can inherit from a common page foundation.
+Business logic should never be placed inside ModuleBase.
 
-Example
+Its responsibility is infrastructure only.
 
-public class ProductPage : BasePage
-{
+---
 
-}
+# Page Classes
+
+Pages inherit from ModuleBase.
+
+Each page represents a single functional part of the module.
+
+Examples include:
+
+- View
+- Edit
+- Settings
+- Dashboard
+- Management
+
+Pages should remain lightweight.
+
+Complex business logic belongs inside services.
+
+---
+
+# Service Layer
+
+Business operations should be implemented through services.
 
 This provides:
 
-Common page lifecycle handling
-Shared security validation
-Common initialization logic
-Consistent behavior
-Context Management
+- better separation
+- easier testing
+- code reuse
+- smaller page classes
 
-Accessing DNN objects directly everywhere creates strong dependency and makes testing difficult.
+Pages orchestrate.
 
-DnnModuleFoundation introduces context abstractions.
-
-Instead of
-
-PortalSettings
-ModuleInfo
-UserInfo
-
-being accessed everywhere, modules can work through centralized contexts.
-
-Example
-
-public interface IModuleContext
-{
-    int ModuleId { get; }
-
-    int PortalId { get; }
-}
-
-Benefits:
-
-Cleaner code
-Lower dependency
-Better testability
-Easier future changes
-Service Architecture
-
-Business operations should not live inside UI controls.
-
-The recommended flow
-
-Presentation Layer
-
-        |
-        |
-
-Application Services
-
-        |
-        |
-
-Infrastructure
-
-        |
-        |
-
-Database
-
-This separation provides:
-
-Better organization
-Reusable business logic
-Easier testing
-Cleaner maintenance
-Skin Management
-
-DNN skins usually contain many shared resources:
-
-CSS
-JavaScript
-Images
-Templates
-Assets
-
-DnnModuleFoundation provides a centralized approach for managing skin-related resources.
-
-The goal is to avoid duplicated resource handling and keep presentation infrastructure organized
-
+Services execute.
 
 ---
 
-# Project Structure
+# Rendering Layer
 
-A module built using DnnModuleFoundation should follow a predictable structure.
+The rendering system supports multiple rendering strategies.
 
-Example:
+## Server-side Rendering
 
+Traditional ASP.NET controls.
 
+Examples:
 
+- ASCX
+- UserControls
+- Razor (where applicable)
 
+---
+
+## Client-side Rendering
+
+The framework also supports client-driven interfaces.
+
+Typical technologies include:
+
+- JavaScript
+- Vue
+- React
+- Handlebars
+- Mustache
+
+The rendering engine should remain independent of business logic.
+
+---
+
+# Dashboard Architecture
+
+The framework allows a module to expose an administrative dashboard.
+
+Unlike standard module pages, dashboards may use a dedicated skin.
+
+This allows administrative interfaces to have their own layout without affecting the public-facing module.
+
+The dashboard infrastructure is part of the framework rather than being implemented separately inside every module.
+
+---
+
+# Skin System
+
+Administrative pages often require a completely different layout.
+
+Instead of embedding layout logic inside pages, the framework introduces dedicated skin definitions.
+
+A skin definition controls:
+
+- Assets
+- CSS
+- JavaScript
+- Layout
+- Shared components
+
+Pages remain focused on application logic.
+
+Skins focus on presentation.
+
+---
+
+# Template System
+
+The template system allows the UI to be customized independently from the module logic.
+
+Templates may be:
+
+- Server-side
+- Client-side
+
+This separation allows the same module to support different visual implementations without changing business code.
+
+---
+
+# Utility Layer
+
+Frequently used functionality is centralized into reusable helper classes.
+
+Typical examples include:
+
+- Path utilities
+- URL helpers
+- Localization
+- Reflection
+- Resource loading
+- Security helpers
+- HTML helpers
+
+The goal is to eliminate duplicated code across modules.
+
+# Creating Your First Module
+
+One of the primary goals of DnnModuleFoundation is to minimize the amount of infrastructure code required when creating a new module.
+
+A developer should only describe the module.
+
+The framework builds the runtime around it.
+
+---
+
+# Step 1 — Create a Module Definition
+
+Every module starts with a definition.
+
+The definition represents the identity of the module.
+
+```csharp
+public sealed class MyModuleDefinition : ModuleDefinition
+{
+}
+```
+
+This single class describes everything that is unique about the module.
+
+Typical configuration includes:
+
+- Module Name
+- Friendly Name
+- Definition Name
+- Installation Folder
+- Resource Files
+- Template Locations
+- Dashboard Settings
+- Asset Locations
+
+Nothing else should need to know these values.
+
+---
+
+# Step 2 — Create a Base Page
+
+Every module usually contains multiple pages.
+
+Instead of duplicating infrastructure, they inherit from a common base.
+
+```csharp
+public abstract class MyModulePage : ModuleBase
+{
+}
+```
+
+This immediately provides:
+
+- Runtime Context
+- Module Definition
+- Service Access
+- Utility Functions
+- Shared Infrastructure
+
+---
+
+# Step 3 — Create Pages
+
+Each page focuses on a single responsibility.
+
+Examples include:
+
+```
+View
+Edit
+Settings
+Dashboard
+Reports
+Management
+```
+
+Pages should remain lightweight.
+
+Heavy logic belongs inside services.
+
+---
+
+# Step 4 — Add Business Services
+
+Business logic should never live inside UI pages.
+
+Instead:
+
+```
+View
+        │
+        ▼
+Application Service
+        │
+        ▼
+Repository
+        │
+        ▼
+Database
+```
+
+This separation makes the module easier to maintain and test.
+
+---
+
+# Step 5 — Create Templates
+
+The UI can be implemented using different rendering approaches.
+
+For example:
+
+Server-side
+
+```
+ASCX
+Razor
+```
+
+Client-side
+
+```
+Vue
+React
+Handlebars
+Mustache
+```
+
+The rendering engine is independent of business logic.
+
+---
+
+# Step 6 — Run
+
+Once the definition and pages exist, the framework provides:
+
+- Runtime Context
+- Module Infrastructure
+- Dashboard Support
+- Skin Support
+- Template Resolution
+- Utilities
+- Helpers
+- Resource Loading
+
+without additional configuration.
+
+---
+
+# Typical Project Structure
+
+A module built with DnnModuleFoundation generally follows this structure.
+
+```
 MyModule
-
 │
 ├── Definition
+│       MyModuleDefinition.cs
 │
-│ └── MyModuleDefinition.cs
-│
-│
-├── Controllers
-│
-│ └── Module Controllers
-│
+├── Pages
+│       View.ascx
+│       Edit.ascx
+│       Dashboard.ascx
 │
 ├── Services
+│       ProductService.cs
+│       UserService.cs
 │
-│ └── Business Services
+├── Templates
+│       Default
+│       Modern
 │
+├── Skin
+│       Dashboard
 │
 ├── Models
 │
-│ └── Data Models
+├── Repositories
 │
+├── Helpers
 │
-├── Data
-│
-│ └── Data Access Components
-│
-│
-├── Pages
-│
-│ └── Module Pages
-│
-│
-├── Controls
-│
-│ └── User Controls
-│
-│
-└── Assets
+└── Resources
+```
 
-├── CSS
+The exact organization is flexible.
 
-├── JavaScript
-
-└── Images
-
-The foundation does not force a specific business implementation.
-
-It provides the infrastructure and standards required for building modules consistently.
+The framework encourages consistency rather than enforcing a rigid folder hierarchy.
 
 ---
 
-# Development Philosophy
+# What the Framework Provides
 
-DnnModuleFoundation is built around several important principles.
+When a module inherits from DnnModuleFoundation, it automatically gains access to a common infrastructure.
 
----
+This includes:
 
-## Separation of Responsibilities
+✔ Module Context
 
-Each component should have a clear responsibility.
+✔ Runtime Information
 
-Examples:
+✔ Service Resolution
 
-Bad:
+✔ Dashboard Infrastructure
 
+✔ Skin Infrastructure
 
-Module Control
+✔ Template Management
 
-|
-|
+✔ Resource Management
 
-Database Query
+✔ Common Utilities
 
-|
-|
+✔ Shared Helpers
 
-Business Logic
+✔ Path Resolution
 
+✔ Asset Management
 
-Good:
+✔ Localization Support
 
+✔ DNN Integration
 
-Module Control
-
-|
-|
-
-Application Service
-
-|
-|
-
-Data Layer
-
-
-The UI layer should focus on presentation, not business processing.
+The module developer can therefore focus almost entirely on business requirements.
 
 ---
 
-# Dependency Management
+# What the Module Provides
 
-Components should depend on abstractions instead of concrete implementations.
+The module itself is responsible only for:
 
-The foundation encourages:
+- Business Logic
+- Domain Models
+- Database Access
+- User Interface
+- Business Services
 
-- Interfaces
-- Service abstractions
-- Clear boundaries between layers
-
-This reduces dependency and makes future changes easier.
-
----
-
-# Reusability
-
-Common functionality should exist in the foundation instead of being duplicated in every module.
-
-Examples:
-
-- Security handling
-- Context access
-- Common validations
-- Shared utilities
-- Resource management
+Everything else belongs to the framework.
 
 ---
 
-# Long-Term Maintainability
+# Design Recommendation
 
-DnnModuleFoundation is designed with long-term projects in mind.
+A module should never reimplement functionality that already exists inside the framework.
 
-A module should remain understandable and maintainable after years of development.
+If multiple modules require the same infrastructure, that functionality belongs in DnnModuleFoundation rather than being copied into individual projects.
 
-The architecture focuses on:
-
-- Predictable structure
-- Consistent patterns
-- Reduced complexity
-- Clear responsibilities
+This keeps every module smaller, more consistent and significantly easier to maintain.
 
 ---
 
-# Supported Environment
+# Extending the Framework
 
-## Platform
+The framework has been intentionally designed around extension rather than modification.
 
-- DotNetNuke (DNN) 10.x
-- .NET Framework 4.7.2
-- C#
-- ASP.NET WebForms
-- SQL Server
+Instead of changing the framework, create new implementations for the appropriate extension points.
 
+Typical extension scenarios include:
 
-## Development Tools
+- Custom Module Definitions
+- Custom Page Types
+- Custom Dashboard Implementations
+- Custom Skin Definitions
+- Custom Template Providers
+- Custom Services
+- Custom Helpers
 
-Recommended:
+This approach allows the framework to evolve while remaining backward compatible with existing modules.
 
-- Visual Studio
-- SQL Server Management Studio
-- Git
+# Framework Concepts
 
+Understanding the philosophy behind DnnModuleFoundation is more important than learning its API.
+
+The framework is intentionally designed around a small number of architectural concepts.
+
+Once these concepts are understood, the rest of the framework becomes predictable and easy to use.
 
 ---
 
-# Getting Started
+# Module Identity
 
-## Create a New Module
+Every module has a unique identity.
 
-A module using DnnModuleFoundation should:
+That identity is represented by a single object:
 
-1. Reference the foundation assemblies.
+```
+ModuleDefinition
+```
 
-2. Create a module definition.
+Instead of spreading configuration across dozens of constants and helper classes, all module metadata belongs in one place.
 
-3. Inherit from foundation base classes.
+The definition is the source of truth for the entire framework.
 
-4. Implement business logic through services.
+Typical information includes:
 
-5. Keep UI components focused on presentation.
+- Module Name
+- Friendly Name
+- Definition Name
+- Installation Directory
+- Resource Files
+- Client Assets
+- Server Templates
+- Client Templates
+- Dashboard Configuration
+- Skin Configuration
 
+The framework should never need to ask for these values elsewhere.
 
-Example:
+If the identity changes, only the definition changes.
 
-```csharp
-public class ProductView : ModuleBase
-{
-    protected void Page_Load(
-        object sender,
-        EventArgs e)
-    {
+---
 
-    }
-}
-Coding Standards
+# Runtime Context
 
-To keep modules consistent:
+Business code should not directly depend on DNN infrastructure.
 
-Naming
+Instead, the framework creates a runtime context representing the current execution environment.
 
-Use clear and meaningful names.
+The context typically contains:
 
-Example:
+- Portal
+- Module
+- Tab
+- User
+- Request
+- Response
+- Settings
 
-ProductService
+Pages, services and infrastructure access runtime information through this context.
 
-CustomerRepository
+This creates a cleaner separation between application logic and the hosting platform.
 
-OrderDefinition
+---
 
+# Infrastructure vs Business
 
-Avoid unclear names:
+One of the primary architectural goals is to separate infrastructure from business code.
 
-Helper1
+Infrastructure includes:
 
-Manager
+- Template Resolution
+- Asset Management
+- Localization
+- Dashboard
+- Skin
+- Utilities
+- Context
+- Services
+- Resource Loading
 
-CommonClass
-Responsibilities
+Business code includes:
 
-Each class should have one clear purpose.
+- Orders
+- Products
+- Users
+- Reports
+- Messages
+- Domain Logic
 
-Avoid creating classes that:
+The framework owns infrastructure.
 
-Handle database operations
-Manage UI
-Process business rules
-Handle security
+The module owns business.
 
-all together.
+---
 
-Security
+# Convention over Configuration
 
-Security should always be considered part of module architecture.
+Most modules are structurally identical.
 
-The foundation provides common infrastructure for:
+They differ only in:
 
-Permission handling
-User context
-Access validation
+- Name
+- Resources
+- Templates
+- Business Logic
 
-Modules should never assume that users have permission.
+The framework therefore favors conventions rather than excessive configuration.
 
-Performance Considerations
+A developer should describe the module.
 
-Modules built on this foundation should consider:
+The framework should assemble everything else.
 
-Efficient database access
-Proper caching strategies
-Avoiding unnecessary DNN API calls
-Optimized resource loading
+---
 
-The foundation provides common patterns to support these goals.
+# Dashboard Isolation
 
-Roadmap
+Administrative interfaces have different requirements from public pages.
 
-Future improvements may include:
+A dashboard may require:
 
-Dependency Injection
+- Different layout
+- Additional JavaScript
+- Custom CSS
+- Administration menus
+- Separate navigation
 
-Improved dependency management and service registration.
+Instead of mixing dashboard behavior into normal pages, DnnModuleFoundation isolates dashboard functionality.
 
-Logging Abstraction
+Dashboard pages become first-class citizens.
 
-Centralized logging support for modules.
+---
 
-Advanced Configuration
+# Skin Isolation
 
-Unified configuration management.
+Presentation should never leak into business code.
 
-Caching Infrastructure
+A skin represents visual infrastructure.
 
-Standard caching mechanisms.
+Pages describe behavior.
 
-Module Templates
+Skins describe presentation.
 
-Tools for quickly creating new modules based on foundation standards.
+This separation allows administrative interfaces to evolve independently without modifying page logic.
 
-More Automated Tests
+---
 
-Increasing test coverage for foundation components.
+# Rendering Independence
 
-Architectural Rules
+Rendering technology should not dictate architecture.
 
-Before adding a new feature to DnnModuleFoundation, consider:
+The framework supports multiple rendering approaches.
 
-Does it reduce complexity?
+Examples include:
 
-The foundation should simplify development, not add unnecessary abstraction.
+Server-side
 
-Does it improve consistency?
+- ASCX
+- Razor
 
-New features should help modules follow the same standards.
+Client-side
 
-Does it belong in the foundation?
+- Vue
+- React
+- Handlebars
 
-Not every reusable code belongs in the foundation.
+Business logic remains unchanged regardless of rendering technology.
 
-Only infrastructure-level functionality should be added.
+---
 
-What DnnModuleFoundation Is Not
+# Extensibility
 
-DnnModuleFoundation is not:
+The framework is designed around extension points.
 
-A replacement for DNN
-A business framework
-A complete application framework
-A database ORM
-A UI component library
+Developers extend behavior rather than modifying framework code.
 
-It is an architectural foundation that helps developers build better DNN modules.
+Typical extension points include:
 
-Versioning
+- Module Definitions
+- Base Pages
+- Services
+- Dashboard
+- Skin Definitions
+- Template Providers
+- Helpers
 
-DnnModuleFoundation follows semantic versioning principles.
+This makes upgrading significantly easier.
 
-Version format:
+---
 
-MAJOR.MINOR.PATCH
+# Minimal Dependencies
 
-Example:
+Every dependency becomes part of every module.
 
-1.0.0
+Therefore the framework intentionally keeps external dependencies to an absolute minimum.
 
-Breaking architectural changes should increase the major version.
+Whenever possible, it relies only on:
 
-Contribution
+- .NET Framework
+- DNN Platform
 
-Contributions are welcome.
+This improves:
 
-Before submitting changes, consider:
+- Compatibility
+- Stability
+- Upgradeability
+- Long-term maintenance
 
-Does this follow the existing architecture?
-Does this improve maintainability?
-Does this reduce complexity?
-Does this help future modules?
+---
 
-Architectural consistency is more important than adding features quickly.
+# Preserve Native DNN
+
+DnnModuleFoundation is not an alternative to DNN.
+
+It is an architectural layer above DNN.
+
+Developers retain access to all standard DNN features.
+
+Nothing is hidden.
+
+Nothing is removed.
+
+The framework simply provides a better organization for building modules.
+
+---
+
+# Scalability
+
+The framework is designed to support modules of every size.
+
+Whether a module contains:
+
+- one page
+
+or
+
+- hundreds of pages
+
+the architecture remains the same.
+
+This consistency significantly reduces maintenance costs over time.
+
+---
+
+# Why ModuleDefinition Exists
+
+Without a definition object, every module repeats the same constants throughout the project.
+
+Examples include:
+
+- Module Name
+- Friendly Name
+- Folder
+- Resource Path
+- Template Path
+
+This duplication creates maintenance problems.
+
+ModuleDefinition centralizes these values into a single source of truth.
+
+---
+
+# Why ModuleBase Exists
+
+Every DNN page requires access to common infrastructure.
+
+Without a shared base class, every page would repeatedly implement:
+
+- Context creation
+- Service access
+- Helpers
+- Resource loading
+- Utility methods
+
+ModuleBase eliminates this duplication.
+
+---
+
+# Why Services Exist
+
+Pages should coordinate.
+
+Services should execute.
+
+This separation keeps user interface code small while allowing business logic to grow independently.
+
+---
+
+# Why Templates Exist
+
+Business logic should survive UI redesigns.
+
+Templates allow user interfaces to evolve without affecting application logic.
+
+The same module can support multiple visual implementations.
+
+---
+
+# Why the Framework Exists
+
+The purpose of DnnModuleFoundation is not to simplify one module.
+
+Its purpose is to standardize every module.
+
+Every project built on top of the framework should look familiar.
+
+Every developer should immediately recognize the architecture.
+
+Every module should share the same infrastructure while remaining completely independent in terms of business functionality.
+
 
 License
 

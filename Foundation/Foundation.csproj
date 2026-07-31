@@ -89,45 +89,43 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Framework\Core\Module\ModuleBase.cs">
+    <Compile Include="Razor\TemplateModel.cs" />
+    <Compile Include="Core\Module\ModuleBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Framework\Core\Module\BasePage.cs">
+    <Compile Include="Core\Module\BasePage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Framework\Core\Module\BasePageModel.cs" />
-    <Compile Include="Framework\Core\Module\PageContext.cs" />
-    <Compile Include="Framework\Core\Skin\SkinManager.cs">
+    <Compile Include="Core\Skin\SkinManager.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Framework\Core\Skin\ResourceManager.cs" />
-    <Compile Include="Framework\Core\Skin\DefaultSkinDefinition.cs" />
-    <Compile Include="Framework\Core\Skin\SkinDefinition.cs" />
-    <Compile Include="Framework\Helper\XmlHelper.cs" />
-    <Compile Include="Framework\Helper\VersionHelper.cs" />
-    <Compile Include="Framework\Helper\RegexHelper.cs" />
-    <Compile Include="Framework\Services\DashboardService.cs" />
-    <Compile Include="Framework\Services\interface\IDashboardService.cs" />
-    <Compile Include="Framework\Services\interface\ILocalizationService.cs" />
-    <Compile Include="Framework\Services\LocalizationService.cs" />
-    <Compile Include="Framework\Services\DeviceDetectionService.cs" />
-    <Compile Include="Framework\Services\interface\IDeviceDetectionService.cs" />
-    <Compile Include="Framework\Services\ManifestService.cs" />
-    <Compile Include="Framework\Services\EnvironmentService.cs" />
-    <Compile Include="Framework\Services\interface\IManifestService.cs" />
-    <Compile Include="Framework\Services\interface\IEnvironmentService.cs" />
-    <Compile Include="Framework\Services\ResourceService.cs" />
-    <Compile Include="Framework\Services\interface\IResourceService.cs" />
-    <Compile Include="Framework\Services\TokenService.cs" />
-    <Compile Include="Framework\Services\interface\ITokenService.cs" />
-    <Compile Include="Framework\Services\TemplateService.cs" />
-    <Compile Include="Framework\Services\interface\ITemplateService.cs" />
-    <Compile Include="Framework\Services\ServiceFactory.cs" />
-    <Compile Include="Framework\Core\Skin\Menu\Menu.cs" />
-    <Compile Include="Framework\Core\Skin\Menu\MenuDTO.cs" />
+    <Compile Include="Core\Skin\ResourceManager.cs" />
+    <Compile Include="Core\Skin\SkinDefinition.cs" />
+    <Compile Include="Helper\XmlHelper.cs" />
+    <Compile Include="Helper\VersionHelper.cs" />
+    <Compile Include="Helper\RegexHelper.cs" />
+    <Compile Include="Services\DashboardService.cs" />
+    <Compile Include="Services\interface\IDashboardService.cs" />
+    <Compile Include="Services\interface\ILocalizationService.cs" />
+    <Compile Include="Services\LocalizationService.cs" />
+    <Compile Include="Services\DeviceDetectionService.cs" />
+    <Compile Include="Services\interface\IDeviceDetectionService.cs" />
+    <Compile Include="Services\ManifestService.cs" />
+    <Compile Include="Services\EnvironmentService.cs" />
+    <Compile Include="Services\interface\IManifestService.cs" />
+    <Compile Include="Services\interface\IEnvironmentService.cs" />
+    <Compile Include="Services\ResourceService.cs" />
+    <Compile Include="Services\interface\IResourceService.cs" />
+    <Compile Include="Services\TokenService.cs" />
+    <Compile Include="Services\interface\ITokenService.cs" />
+    <Compile Include="Services\TemplateService.cs" />
+    <Compile Include="Services\interface\ITemplateService.cs" />
+    <Compile Include="Services\ServiceFactory.cs" />
+    <Compile Include="Core\Skin\Menu\Menu.cs" />
+    <Compile Include="Core\Skin\Menu\MenuDTO.cs" />
     <Compile Include="Razor\DotNetNukeWebPage.cs" />
     <Compile Include="Razor\RazorEngine.cs" />
-    <Compile Include="Framework\Core\Module\ModuleDefinition.cs" />
+    <Compile Include="Core\Module\ModuleDefinition.cs" />
     <Compile Include="Utility\Conditions.cs" />
     <Compile Include="Utility\Common.cs" />
     <Compile Include="Utility\Constants.cs" />

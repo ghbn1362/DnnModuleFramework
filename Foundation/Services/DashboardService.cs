@@ -16,15 +16,16 @@ namespace DotNetNuke.Modules.Foundation.Services
             _definition = definition;
         }
 
-        public void EnsureSkinAndDashboard(System.Web.UI.Page page, PortalModuleBase moduleConfig, PortalSettings portalSettings, System.Collections.Hashtable settings)
+        public void EnsureSkinAndDashboard(
+            System.Web.UI.Page page
+            , PortalModuleBase moduleConfig
+            , PortalSettings portalSettings
+            , Hashtable settings)
         {
             // previous behavior: try to ensure dashboard skin when IsDashboard
             try
             {
-                bool inSettings = Convert.ToBoolean(moduleConfig.Settings["IsDashboard"] ?? false);
-                bool dashboardModule = moduleConfig.ModuleConfiguration.ModuleDefinition.DefinitionName.Trim().ToLower() == _definition.DefinitionName.Trim().ToLower();
-
-                if (inSettings && dashboardModule)
+                if (_definition.UseDashboardSkin)
                 {
                     if (page.Request.Params["ctl"] == null)
                     {

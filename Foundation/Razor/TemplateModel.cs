@@ -2,11 +2,7 @@
 
 namespace DotNetNuke.Modules.Foundation.Core.Module
 {
-    /// <summary>
-    /// View model used when rendering templates.
-    /// Keep minimal; extend when templates require new properties.
-    /// </summary>
-    public class BasePageModel
+    public class TemplateModel
     {
         public bool IsAdmin { get; set; }
         public bool IsSuperUser { get; set; }

@@ -14,6 +14,8 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public string FriendlyName { get; }
 
+        public bool UseDashboardSkin { get; }
+
         public ModuleDefinition(
             string moduleName,
             string definitionName,
