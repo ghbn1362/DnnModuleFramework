@@ -1,47 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace DotNetNuke.Modules.Foundation.Core.Skin
 {
+    /// <summary>
+    /// Base definition for a DNN Skin.
+    /// Defines resources and skin configuration.
+    /// </summary>
     public abstract class SkinDefinition
     {
-        protected SkinDefinition(Core.Module.ModuleDefinition definition)
+        private readonly ResourceCollection _resources;
+
+
+        protected SkinDefinition(Module.ModuleDefinition definition)
         {
-            Definition = definition ?? null;
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
+
+            Definition = definition;
+
+            _resources = new ResourceCollection();
+
+            Configure();
         }
 
-        protected Core.Module.ModuleDefinition Definition { get; }
+
+        protected Module.ModuleDefinition Definition { get; }
 
 
-        /// <summary>
-        /// مسیر ریشه Assets
-        /// </summary>
+        internal ResourceCollection Resources => _resources;
+
+
+        protected abstract void Configure();
+
+
         public abstract string AssetsPath { get; }
 
-        /// <summary>
-        /// فایل های Css
-        /// </summary>
-        public virtual IEnumerable<string> StyleSheets
+
+        protected void Css(params string[] files)
         {
-            get { yield break; }
+            foreach (var file in files)
+            {
+                _resources.Css(file);
+            }
+        }
+
+
+        protected void Js(params string[] files)
+        {
+            foreach (var file in files)
+            {
+                _resources.Js(file);
+            }
         }
 
         /// <summary>
-        /// فایل های Js
+        /// Determines whether PersonaBar CSS should be registered.
         /// </summary>
-        public virtual IEnumerable<string> Scripts
-        {
-            get { yield break; }
-        }
-
-        /// <summary>
-        /// آیا CSS پرسونا بار ثبت شود؟
-        /// </summary>
-        public virtual bool RegisterPersonaBarCss
-        {
-            get { return true; }
-        }
+        public virtual bool RegisterPersonaBarCss =>
+            true;
     }
 }
