@@ -46,10 +46,11 @@ namespace DotNetNuke.Modules.Foundation.Services
                         }
                     }
 
-                    if (((settings["hideadminborder"] == null) || (!bool.Parse(settings["hideadminborder"].ToString()))) &&
-                        (page.Request.Params["ctl"] == null))
+                    if ((settings[Constants.SettingName_HideAdminBorder] == null 
+                        || !bool.Parse(settings[Constants.SettingName_HideAdminBorder].ToString())) 
+                        && page.Request.Params["ctl"] == null)
                     {
-                        ModuleController.Instance.UpdateTabModuleSetting(moduleConfig.TabModuleId, "hideadminborder", "true");
+                        ModuleController.Instance.UpdateTabModuleSetting(moduleConfig.TabModuleId, Constants.SettingName_HideAdminBorder, "true");
                         DotNetNuke.Common.Utilities.Config.Touch();
                         page.Response.Redirect(page.Request.Url.ToString());
                     }

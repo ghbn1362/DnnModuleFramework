@@ -89,6 +89,17 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Manifest\IManifestReader.cs" />
+    <Compile Include="Manifest\ManifestDocument.cs" />
+    <Compile Include="Manifest\ManifestNode.cs" />
+    <Compile Include="Manifest\ManifestProperties.cs" />
+    <Compile Include="Manifest\ManifestProperty.cs" />
+    <Compile Include="Manifest\ManifestResource.cs" />
+    <Compile Include="Manifest\ManifestScript.cs" />
+    <Compile Include="Manifest\ManifestStyleSheet.cs" />
+    <Compile Include="Manifest\ManifestToken.cs" />
+    <Compile Include="Manifest\ManifestValueConverter.cs" />
+    <Compile Include="Manifest\XmlManifestReader.cs" />
     <Compile Include="Razor\TemplateModel.cs" />
     <Compile Include="Core\Module\ModuleBase.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -110,9 +121,7 @@
     <Compile Include="Services\LocalizationService.cs" />
     <Compile Include="Services\DeviceDetectionService.cs" />
     <Compile Include="Services\interface\IDeviceDetectionService.cs" />
-    <Compile Include="Services\ManifestService.cs" />
     <Compile Include="Services\EnvironmentService.cs" />
-    <Compile Include="Services\interface\IManifestService.cs" />
     <Compile Include="Services\interface\IEnvironmentService.cs" />
     <Compile Include="Services\ResourceService.cs" />
     <Compile Include="Services\interface\IResourceService.cs" />

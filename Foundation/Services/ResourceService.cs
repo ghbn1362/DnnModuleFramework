@@ -4,12 +4,10 @@ using System.Xml;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Services.Exceptions;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace DotNetNuke.Modules.Foundation.Services
 {
-    /// <summary>
-    /// Registers scripts/styles based on manifest. Uses EnvironmentService for path resolution and DeviceDetectionService for filtering.
-    /// </summary>
     public class ResourceService : IResourceService
     {
         private readonly Core.Module.ModuleDefinition _definition;
@@ -19,65 +17,95 @@ namespace DotNetNuke.Modules.Foundation.Services
         }
 
 
-        public void ImportFromManifest(string template, string skin, ref int cssPriority, ref int jsPriority, System.Web.UI.Page page, DotNetNuke.Entities.Modules.ModuleInfo moduleConfig, DotNetNuke.Entities.Portals.PortalSettings portalSettings, IEnvironmentService env)
+        public void ImportFromManifest(
+            string template
+            , string skin
+            , ref int cssPriority
+            , ref int jsPriority
+            , System.Web.UI.Page page
+            , DotNetNuke.Entities.Modules.ModuleInfo moduleConfig
+            , DotNetNuke.Entities.Portals.PortalSettings portalSettings
+            , IEnvironmentService env)
         {
             try
             {
                 var manifestPath = env.ResolveTemplateManifestPath(template, skin, portalSettings);
+
                 if (string.IsNullOrEmpty(manifestPath) || !File.Exists(manifestPath)) return;
 
-                var xml = new XmlDocument();
-                xml.Load(manifestPath);
+                Manifest.XmlManifestReader manifest =
+                    new Manifest.XmlManifestReader(manifestPath, _definition.UseDashboardSkin);
+                Manifest.ManifestDocument manifestDocument = manifest.Load();
 
-                foreach (XmlNode node in xml.DocumentElement.ChildNodes)
-                {
-                    if (node.NodeType != XmlNodeType.Element) continue;
-                    var elt = (XmlElement)node;
-
-                    if (elt.LocalName.Equals("scripts", StringComparison.OrdinalIgnoreCase))
+                if (manifestDocument?.Scripts?.Count > 0)
+                    foreach (var script in manifestDocument.Scripts)
                     {
-                        foreach (XmlElement scriptElt in elt.GetElementsByTagName("script"))
+                        if (string.IsNullOrEmpty(script.Path)) continue;
+
+                        var scriptPath = env.GetResolvedPath(
+                            script.Path
+                            , script.Tokenization
+                            , true
+                            , template
+                            , portalSettings
+                            , moduleConfig);
+
+                        if (scriptPath == null) continue;
+
+                        if (script.Compression)
+                            ClientResourceManager.RegisterScript(
+                                page
+                                , scriptPath
+                                , jsPriority++
+                                , script.Provider);
+                        else
                         {
-                            var inner = scriptElt.InnerText?.Trim();
-                            if (string.IsNullOrEmpty(inner)) continue;
+                            string key = scriptPath.GetHashCode().ToString();
+                            scriptPath = scriptPath + "?cdv=" + scriptPath.CDV();
 
-                            // Device/culture/version checks performed by environment service / device detection
-                            var scriptPath = env.GetResolvedPath(inner, scriptElt, true, template, portalSettings, moduleConfig);
-                            if (scriptPath == null) continue;
+                            string scriptStr = Common.GenerateScriptTag(
+                                scriptPath
+                                , script.Async
+                                , script.Defer);
 
-                            if (env.ShouldRegisterCompressed(scriptElt))
-                                ClientResourceManager.RegisterScript(page, scriptPath, jsPriority++, env.GetProvider(scriptElt, false, portalSettings.PortalId));
-                            else
-                            {
-                                string key = scriptPath.GetHashCode().ToString();
-                                scriptPath = scriptPath + "?cdv=" + scriptPath.CDV();
-                                string scriptStr = Common.GenerateScriptTag(scriptPath, env.GetAsync(scriptElt), env.GetDefer(scriptElt));
-                                page.ClientScript.RegisterClientScriptBlock(page.GetType(), key, scriptStr);
-                            }
+                            page.ClientScript.RegisterClientScriptBlock(
+                                page.GetType()
+                                , key
+                                , scriptStr);
                         }
                     }
-                    else if (elt.LocalName.Equals("stylesheets", StringComparison.OrdinalIgnoreCase))
+
+                if (manifestDocument?.StyleSheets?.Count > 0)
+                    foreach (var style in manifestDocument.StyleSheets)
                     {
-                        foreach (XmlElement cssElt in elt.GetElementsByTagName("stylesheet"))
+                        if (string.IsNullOrEmpty(style.Path)) continue;
+
+                        var cssPath = env.GetResolvedPath(
+                            style.Path
+                            , style.Tokenization
+                            , false
+                            , template
+                            , portalSettings
+                            , moduleConfig);
+
+                        if (cssPath == null) continue;
+
+                        if (style.Compression)
+                            RegisterStyleSheet(
+                                page
+                                , cssPath
+                                , cssPriority++
+                                , style.Provider
+                                , CultureInfo.CurrentCulture);
+                        else
                         {
-                            var inner = cssElt.InnerText?.Trim();
-                            if (string.IsNullOrEmpty(inner)) continue;
-
-                            var cssPath = env.GetResolvedPath(inner, cssElt, false, template, portalSettings, moduleConfig);
-                            if (cssPath == null) continue;
-
-                            if (env.ShouldRegisterCompressed(cssElt))
-                                RegisterStyleSheet(page, cssPath, cssPriority++, env.GetProvider(cssElt, true, portalSettings.PortalId), CultureInfo.CurrentCulture);
-                            else
-                            {
-                                string key = cssPath.GetHashCode().ToString();
-                                cssPath = cssPath + "?cdv=" + cssPath.CDV();
-                                string csslink = "<link href=\"" + cssPath + "\" type=\"text/css\" rel=\"stylesheet\" />";
-                                page.ClientScript.RegisterClientScriptBlock(page.GetType(), key, csslink, false);
-                            }
+                            string key = cssPath.GetHashCode().ToString();
+                            cssPath = cssPath + "?cdv=" + cssPath.CDV();
+                            string csslink = "<link href=\"" + cssPath + "\" type=\"text/css\" rel=\"stylesheet\" />";
+                            page.ClientScript.RegisterClientScriptBlock(page.GetType(), key, csslink, false);
                         }
                     }
-                }
+
             }
             catch (Exception ex)
             {

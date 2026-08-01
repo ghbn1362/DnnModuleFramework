@@ -4,12 +4,10 @@ using System.IO;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using System.Web;
+using System.Collections.Generic;
 
 namespace DotNetNuke.Modules.Foundation.Services
 {
-    /// <summary>
-    /// Encapsulates path resolution, tokenization, provider selection and helpers used by ResourceService.
-    /// </summary>
     public class EnvironmentService : IEnvironmentService
     {
         private readonly Core.Module.ModuleDefinition _definition;
@@ -21,7 +19,7 @@ namespace DotNetNuke.Modules.Foundation.Services
 
         public string GetResolvedPath(
             string filepath
-            , XmlElement scriptElt
+            , bool tokenization
             , bool isScript
             , string name
             , PortalSettings portalSettings
@@ -43,7 +41,7 @@ namespace DotNetNuke.Modules.Foundation.Services
                 result = VirtualPathUtility.ToAbsolute("~/" + templatepath + filepath);
             }
 
-            if ((scriptElt != null) && (Tokenization(scriptElt)))
+            if (tokenization)
             {
                 string scheme = System.Web.HttpContext.Current.Request.Url.Scheme + "://";
                 string language = System.Globalization.CultureInfo.CurrentCulture.ToString().ToLower();
@@ -79,52 +77,6 @@ namespace DotNetNuke.Modules.Foundation.Services
             }
         }
 
-        public bool ShouldRegisterCompressed(XmlElement elt) => Compression(elt) && !Tokenization(elt);
-
-        public string GetProvider(XmlElement elt, bool isStyle, int portalId)
-        {
-            // keep previous Provider behavior
-            string styleProvider = DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName.ToLower().Trim();
-            string scriptProvider = DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName.ToLower().Trim();
-
-            if ((elt?.Attributes != null) && (elt.Attributes["Provider"] != null))
-            {
-                string provider = elt.Attributes["Provider"].Value.ToLower().Trim();
-                if (provider == DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName;
-                if (provider == DotNetNuke.Web.Client.Providers.DnnBodyProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnBodyProvider.DefaultName;
-                if (provider == DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName;
-            }
-
-            if (isStyle)
-            {
-                if (styleProvider == DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName;
-                if (styleProvider == DotNetNuke.Web.Client.Providers.DnnBodyProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnBodyProvider.DefaultName;
-                if (styleProvider == DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName;
-            }
-            else
-            {
-                if (scriptProvider == DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnPageHeaderProvider.DefaultName;
-                if (scriptProvider == DotNetNuke.Web.Client.Providers.DnnBodyProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnBodyProvider.DefaultName;
-                if (scriptProvider == DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName.ToLower().Trim())
-                    return DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName;
-            }
-
-            return DotNetNuke.Web.Client.Providers.DnnFormBottomProvider.DefaultName;
-        }
-
-        public bool GetAsync(XmlElement elt) => Async(elt);
-        public bool GetDefer(XmlElement elt) => Defer(elt);
-
-
-        #region small helpers (extracts from old code)
 
         public string TemplateDirectory(string template, PortalSettings portalSettings)
         {
@@ -166,68 +118,5 @@ namespace DotNetNuke.Modules.Foundation.Services
                 return string.Empty;
             }
         }
-
-        private bool CheckCulture(XmlElement tag)
-        {
-            if ((tag?.Attributes != null) && (tag.Attributes["CheckCulture"] != null))
-            {
-                string culture = tag.Attributes["CheckCulture"].Value.Trim();
-                return (culture.Equals(System.Globalization.CultureInfo.CurrentCulture.ToString(), StringComparison.OrdinalIgnoreCase));
-            }
-            return false;
-        }
-
-        private bool Compression(XmlElement tag)
-        {
-            if ((tag?.Attributes != null) && (tag.Attributes["Compression"] != null))
-            {
-                string compression = tag.Attributes["Compression"].Value.Trim();
-                return ((compression.ToLower() == "true") || (compression == "1"));
-            }
-            return true;
-        }
-
-        private bool Tokenization(XmlElement tag)
-        {
-            if ((tag?.Attributes != null) && (tag.Attributes["Tokenization"] != null))
-            {
-                string tokenization = tag.Attributes["Tokenization"].Value.Trim();
-                return ((tokenization.ToLower() == "true") || (tokenization == "1"));
-            }
-            return false;
-        }
-
-        private bool Async(XmlElement tag)
-        {
-            if ((tag?.Attributes != null) && (tag.Attributes["Async"] != null))
-            {
-                string Async = tag.Attributes["Async"].Value.Trim();
-                return ((Async.ToLower() == "true") || (Async == "1"));
-            }
-            return true;
-        }
-
-        private bool Defer(XmlElement tag)
-        {
-            if ((tag?.Attributes != null) && (tag.Attributes["Defer"] != null))
-            {
-                string defer = tag.Attributes["Defer"].Value.Trim();
-                return ((defer.ToLower() == "true") || (defer == "1"));
-            }
-            return false;
-        }
-
-        private bool Naked(XmlElement tag, string ModuleName)
-        {
-            if ((tag?.Attributes != null) && (tag.Attributes["Naked"] != null))
-            {
-                string Tokenization = tag.Attributes["Naked"].Value.Trim();
-                return (Tokenization.ToLower() == "false") || (Tokenization == "0") ||
-                       (string.IsNullOrEmpty(ModuleName)) || (!ModuleName.Equals(_definition.ModuleName, StringComparison.OrdinalIgnoreCase));
-            }
-            return true;
-        }
-
-        #endregion
     }
 }

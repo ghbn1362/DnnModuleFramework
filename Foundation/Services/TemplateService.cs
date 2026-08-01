@@ -7,9 +7,6 @@ using DotNetNuke.Services.Exceptions;
 
 namespace DotNetNuke.Modules.Foundation.Services
 {
-    /// <summary>
-    /// Loads templates (razor or static html). Sets LastRenderedTemplateFilePath for localization lookup.
-    /// </summary>
     public class TemplateService : ITemplateService
     {
         private readonly Core.Module.ModuleDefinition _definition;

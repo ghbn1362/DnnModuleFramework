@@ -1,25 +1,52 @@
-﻿using System;
+﻿using DotNetNuke.Services.ClientCapability;
+using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace DotNetNuke.Modules.Foundation.Services
 {
     public class DeviceDetectionService : IDeviceDetectionService
     {
-        public bool MatchesDevice(XmlElement elt)
-        {
-            // Basic port of previous DeviceDetection logic, keep small and testable.
-            var device = DotNetNuke.Services.ClientCapability.ClientCapabilityProvider.CurrentClientCapability;
-            if (elt?.Attributes == null) return true;
-
-            if (elt.Attributes["Mobile"] != null)
+        private static readonly Dictionary<string, Func<IClientCapability, XmlAttribute, bool>> Matchers =
+            new Dictionary<string, Func<IClientCapability, XmlAttribute, bool>>(StringComparer.OrdinalIgnoreCase)
             {
-                var val = elt.Attributes["Mobile"].Value.Trim();
-                bool IsMobile = (val.ToLower() == "true" || val == "1");
-                return (device.IsMobile && IsMobile) || (!device.IsMobile && !IsMobile);
+                ["IsMobile"] = (c, a) => c.IsMobile == ParseBool(a.Value),
+                ["IsTablet"] = (c, a) => c.IsTablet == ParseBool(a.Value),
+                ["IsTouchScreen"] = (c, a) => c.IsTouchScreen == ParseBool(a.Value),
+
+                ["BrowserName"] = (c, a) => c.BrowserName.Equals(a.Value, StringComparison.OrdinalIgnoreCase),
+
+                ["ScreenResolutionWidthInPixels"] =
+                (c, a) => c.ScreenResolutionWidthInPixels == int.Parse(a.Value),
+
+                ["ScreenResolutionHeightInPixels"] =
+                (c, a) => c.ScreenResolutionHeightInPixels == int.Parse(a.Value),
+            };
+
+        public bool MatchesDevice(XmlElement element)
+        {
+            if (element?.Attributes == null)
+                return true;
+
+            var capability = ClientCapabilityProvider.CurrentClientCapability;
+
+            foreach (XmlAttribute attribute in element.Attributes)
+            {
+                Func<IClientCapability, XmlAttribute, bool> matcher;
+                if (Matchers.TryGetValue(attribute.Name, out matcher) &&
+                    !matcher(capability, attribute))
+                {
+                    return false;
+                }
             }
 
-            // add other attributes as needed...
             return true;
+        }
+
+        private static bool ParseBool(string value)
+        {
+            return value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                   value == "1";
         }
     }
 }
