@@ -111,7 +111,7 @@ namespace DotNetNuke.Modules.Foundation.Core.Skin
         #region Paths
 
         private string TemplatePath =>
-            $"{SkinPath}{Constants.SkinMenuPath}".MapPath();
+            $"{SkinPath}{Constants.SkinMenuPath}".ToAppRelativePath();
 
         #endregion
 

@@ -18,82 +18,50 @@ namespace DotNetNuke.Modules.Foundation.Services
 
 
         public string GetResolvedPath(
-            string filepath
+            string manifestAssetPath
+            , string manifestPath
+            , string modulePath
+            , int moduleId
             , bool tokenization
-            , bool isScript
-            , string name
-            , PortalSettings portalSettings
-            , DotNetNuke.Entities.Modules.ModuleInfo moduleConfig)
+            , bool isScript)
         {
             // Similar logic to previous GetResolvedPath with tokenization handling.
-            if (string.IsNullOrEmpty(filepath)) return null;
-            if (filepath.IsUrl()) return filepath;
+            if (string.IsNullOrEmpty(manifestAssetPath)) return null;
+            if (manifestAssetPath.IsUrl()) return manifestAssetPath;
 
-            string templatepath = TemplateDirectory(name, portalSettings);
+            //string templatepath = TemplateManifestMapPath(templateName);
             string result;
 
-            if (filepath.StartsWith("[G]"))
-                result = VirtualPathUtility.ToAbsolute(moduleConfig?.ModuleControl?.ControlSrc ?? string.Empty) + filepath.Replace("[G]", "");
+            if (manifestAssetPath.StartsWith("[G]"))
+                result = VirtualPathUtility.ToAbsolute(modulePath.DirectoryPath()) + manifestAssetPath.Replace("[G]", "");
             else
             {
-                if (templatepath.ToLower().IndexOf("desktopmodules") > 0)
-                    templatepath = templatepath.Substring(templatepath.ToLower().IndexOf("desktopmodules"));
-                result = VirtualPathUtility.ToAbsolute("~/" + templatepath + filepath);
+                result = $"{manifestPath.DirectoryPath()}{manifestAssetPath}".ResolveUrl();
             }
 
-            if (tokenization)
+            if (tokenization && moduleId > 0)
             {
-                string scheme = System.Web.HttpContext.Current.Request.Url.Scheme + "://";
-                string language = System.Globalization.CultureInfo.CurrentCulture.ToString().ToLower();
-                string alias = portalSettings.PortalAlias.HTTPAlias.ToLower().Replace(scheme, "").Replace("/" + language, "");
-                string url = scheme + alias;
-                result = result.Replace(".js", "").Replace(".css", "");
-                return url + "/mid/" + moduleConfig.ModuleID + "/c/" + (isScript ? "js" : "css") + "/f/" + System.Web.HttpUtility.UrlEncode(result) + "/Assets.ashx?cdv=" + result.CDV();
+                var request = HttpContext.Current.Request;
+                string baseUrl = request.Url.GetLeftPart(UriPartial.Authority);
+
+                if (!string.IsNullOrEmpty(request.ApplicationPath) &&
+                    request.ApplicationPath != "/")
+                {
+                    baseUrl += request.ApplicationPath;
+                }
+
+                return $"{baseUrl}/mid/{moduleId}/c/{(isScript ? "js" : "css")}/f/{HttpUtility.UrlEncode(result.Replace(".js", "").Replace(".css", ""))}/Assets.ashx?cdv={result.CDV()}";
             }
 
             return result;
         }
 
-        public string ResolveTemplateManifestPath(string template, string skin, PortalSettings portalSettings)
+        public string TemplateManifestMapPath(string template)
         {
             try
             {
-                string homeDir = portalSettings.HomeDirectoryMapPath;
-                if (homeDir.ToLower().LastIndexOf("portals") > 0)
-                    homeDir = homeDir.Substring(0, homeDir.ToLower().LastIndexOf("portals"));
-
-                homeDir = $"{homeDir}{_definition.ModuleDirectory}Templates/";
+                string directoryMapPath = $"{_definition.ModuleDirectory}Templates/".MapPath();
                 string templateFor = string.IsNullOrEmpty(template) ? "Dashboard" : template;
-
-                homeDir += templateFor + "/";
-                homeDir = homeDir.Replace("/", @"\").Replace(@"\\", @"\");
-
-                var manifest = Path.Combine(homeDir, Constants.TemplateManifestName);
-                return manifest;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-
-        public string TemplateDirectory(string template, PortalSettings portalSettings)
-        {
-            try
-            {
-                if (portalSettings == null) return string.Empty;
-
-                string HomeDirectory = portalSettings.HomeDirectoryMapPath ?? string.Empty;
-
-                var lower = HomeDirectory.ToLower();
-                var lastPortals = lower.LastIndexOf("portals");
-                if (lastPortals > 0)
-                    HomeDirectory = HomeDirectory.Substring(0, lastPortals);
-
-                HomeDirectory = $"{HomeDirectory}{_definition.ModuleDirectory}Templates/";
-
-                string TemplateFor = string.IsNullOrEmpty(template) ? "Dashboard" : template;
 
                 if (string.IsNullOrEmpty(template))
                 {
@@ -101,18 +69,18 @@ namespace DotNetNuke.Modules.Foundation.Services
                     if (q != null)
                     {
                         if (q["ctl"] != null)
-                            TemplateFor = q["ctl"].ToString();
+                            templateFor = q["ctl"].ToString();
                         if (q["sp"] != null)
-                            TemplateFor = q["sp"].ToString();
+                            templateFor = q["sp"].ToString();
                     }
                 }
 
-                HomeDirectory += TemplateFor + "/";
-                HomeDirectory = HomeDirectory.Replace("/", @"\").Replace(@"\\", @"\");
+                directoryMapPath += templateFor + "/";
+                directoryMapPath = directoryMapPath.Replace("/", @"\").Replace(@"\\", @"\");
 
-                return HomeDirectory;
+                return Path.Combine(directoryMapPath, Constants.TemplateManifestName);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
                 return string.Empty;

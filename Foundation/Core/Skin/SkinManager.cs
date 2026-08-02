@@ -15,13 +15,13 @@ namespace DotNetNuke.Modules.Foundation
         /// <summary>
         /// Gets current skin definition.
         /// </summary>
-        protected abstract Core.Skin.SkinDefinition Definition { get; }
-
+        protected abstract Core.Module.ModuleDefinition Definition { get; }
+        protected int CssPriority = 50;
+        protected int JsPriority = 50;
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
 
             Initialize();
         }
@@ -33,12 +33,8 @@ namespace DotNetNuke.Modules.Foundation
         {
             OnBeforeInitialize();
 
-
             RegisterResources();
-
-
             RegisterPersonaBar();
-
 
             OnAfterInitialize();
         }
@@ -64,9 +60,20 @@ namespace DotNetNuke.Modules.Foundation
         /// </summary>
         protected virtual void RegisterResources()
         {
-            Core.Skin.ResourceManager.Register(
-                Page,
-                Definition);
+            //Core.Skin.ResourceManager.Register(
+            //    Page,
+            //    Definition);
+            Services.IResourceService ResourceService = Services.ServiceFactory.Get<Services.IResourceService>(Definition);
+            Services.IEnvironmentService EnvironmentService = Services.ServiceFactory.Get<Services.IEnvironmentService>(Definition);
+
+            ResourceService?.ImportFromManifest(
+                Definition.SkinManifestPath
+                , ref CssPriority
+                , ref JsPriority
+                , Page
+                , Definition.ControlPath
+                , 0
+                , EnvironmentService);
         }
 
         /// <summary>

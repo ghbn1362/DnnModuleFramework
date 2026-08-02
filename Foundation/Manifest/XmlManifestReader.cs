@@ -151,6 +151,9 @@ namespace DotNetNuke.Modules.Foundation.Manifest
         }
         private bool CheckCulture(string culture)
         {
+            if (string.IsNullOrEmpty(culture))
+                return true;
+
             return (culture.Equals(System.Globalization.CultureInfo.CurrentCulture.ToString(), StringComparison.OrdinalIgnoreCase));
         }
     }

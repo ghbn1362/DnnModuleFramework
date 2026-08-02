@@ -6,7 +6,14 @@ namespace DotNetNuke.Modules.Foundation.Services
 {
     public interface IEnvironmentService
     {
-        string GetResolvedPath(string filepath, bool tokenization, bool isScript, string name, PortalSettings portalSettings, ModuleInfo moduleConfig);
-        string ResolveTemplateManifestPath(string template, string skin, PortalSettings portalSettings);
+        string GetResolvedPath(
+            string filepath
+            , string manifestPath
+            , string modulePath
+            , int moduleId
+            , bool tokenization
+            , bool isScript);
+
+        string TemplateManifestMapPath(string template);
     }
 }

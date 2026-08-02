@@ -18,18 +18,17 @@ namespace DotNetNuke.Modules.Foundation.Services
 
 
         public void ImportFromManifest(
-            string template
-            , string skin
+            string manifestPath
             , ref int cssPriority
             , ref int jsPriority
             , System.Web.UI.Page page
-            , DotNetNuke.Entities.Modules.ModuleInfo moduleConfig
-            , DotNetNuke.Entities.Portals.PortalSettings portalSettings
+            , string modulePath
+            , int moduleId
             , IEnvironmentService env)
         {
             try
             {
-                var manifestPath = env.ResolveTemplateManifestPath(template, skin, portalSettings);
+                //var manifestPath = env.TemplateManifestMapPath(template);
 
                 if (string.IsNullOrEmpty(manifestPath) || !File.Exists(manifestPath)) return;
 
@@ -44,11 +43,11 @@ namespace DotNetNuke.Modules.Foundation.Services
 
                         var scriptPath = env.GetResolvedPath(
                             script.Path
+                            , manifestPath
+                            , modulePath
+                            , moduleId
                             , script.Tokenization
-                            , true
-                            , template
-                            , portalSettings
-                            , moduleConfig);
+                            , true);
 
                         if (scriptPath == null) continue;
 
@@ -82,11 +81,11 @@ namespace DotNetNuke.Modules.Foundation.Services
 
                         var cssPath = env.GetResolvedPath(
                             style.Path
+                            , manifestPath
+                            , modulePath
+                            , moduleId
                             , style.Tokenization
-                            , false
-                            , template
-                            , portalSettings
-                            , moduleConfig);
+                            , false);
 
                         if (cssPath == null) continue;
 

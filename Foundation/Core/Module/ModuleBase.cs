@@ -76,7 +76,14 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
             // import resources from manifest for current template
             try
             {
-                ResourceService?.ImportFromManifest(string.Empty, Skin, ref CssPriority, ref JsPriority, Page, ModuleConfiguration, PortalSettings, EnvironmentService);
+                ResourceService?.ImportFromManifest(
+                    string.Empty
+                    , ref CssPriority
+                    , ref JsPriority
+                    , Page
+                    , ModuleConfiguration?.ModuleControl?.ControlSrc
+                    , ModuleConfiguration.ModuleID
+                    , EnvironmentService);
             }
             catch (Exception ex)
             {

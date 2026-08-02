@@ -131,7 +131,14 @@ namespace DotNetNuke.Modules.Foundation
             html = TemplateService?.LoadTemplatesInHtml(html, Skin, PortalSettings, this) ?? html;
 
             // import resources referenced by template
-            ResourceService?.ImportFromManifest(string.Empty, Skin, ref CssPriority, ref JsPriority, Page, ModuleConfiguration, PortalSettings, EnvironmentService);
+            ResourceService?.ImportFromManifest(
+                string.Empty
+                , ref CssPriority
+                , ref JsPriority
+                , Page
+                , ModuleConfiguration?.ModuleControl?.ControlSrc
+                , ModuleConfiguration.ModuleID
+                , EnvironmentService);
 
             // run localization (template-specific resource file handled inside TemplateService or LocalizationService)
             html = LocalizationService?.LocalizeHtml(html, Settings, TemplateService?.LastRenderedTemplateFilePath, LocalResourceFile) ?? html;

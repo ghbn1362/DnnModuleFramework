@@ -89,10 +89,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Skin\ResourceCollection.cs" />
-    <Compile Include="Core\Skin\ResourceItem.cs" />
-    <Compile Include="Core\Skin\ResourceLocation.cs" />
-    <Compile Include="Core\Skin\ResourceType.cs" />
+    <Compile Include="Core\Skin\ResourceManager.cs" />
+    <Compile Include="Core\Skin\SkinManager.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Manifest\IManifestReader.cs" />
     <Compile Include="Manifest\ManifestDocument.cs" />
     <Compile Include="Manifest\ManifestNode.cs" />
@@ -111,11 +111,6 @@
     <Compile Include="Core\Module\BasePage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Core\Skin\SkinManager.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Core\Skin\ResourceManager.cs" />
-    <Compile Include="Core\Skin\SkinDefinition.cs" />
     <Compile Include="Helper\XmlHelper.cs" />
     <Compile Include="Helper\VersionHelper.cs" />
     <Compile Include="Helper\RegexHelper.cs" />

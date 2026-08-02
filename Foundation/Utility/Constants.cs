@@ -27,5 +27,8 @@ namespace DotNetNuke.Modules.Foundation
         internal const string ModuleSkinMenuPath = SkinDirectory + SkinMenuPath;
 
         internal const string SettingName_HideAdminBorder = "hideadminborder";
+        internal const string SkinManifestName = "skin.config";
+        internal const string SkinManifestPath = SkinDirectory + SkinManifestName;
+
     }
 }

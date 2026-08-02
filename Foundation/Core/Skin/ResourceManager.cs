@@ -3,6 +3,8 @@ using System.Web;
 using System.Web.UI;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client.Providers;
+using DotNetNuke.Modules.Foundation.Manifest;
+using DotNetNuke.Modules.Foundation.Services;
 
 namespace DotNetNuke.Modules.Foundation.Core.Skin
 {
@@ -13,7 +15,7 @@ namespace DotNetNuke.Modules.Foundation.Core.Skin
     {
         public static void Register(
             Page page,
-            SkinDefinition definition)
+            Core.Module.ModuleDefinition definition)
         {
             if (page == null)
                 throw new ArgumentNullException(nameof(page));
@@ -22,105 +24,66 @@ namespace DotNetNuke.Modules.Foundation.Core.Skin
                 throw new ArgumentNullException(nameof(definition));
 
 
-            foreach (var resource in definition.Resources.GetOrdered())
-            {
-                if (!resource.Enabled)
-                    continue;
 
 
-                string path = ResolvePath(
-                    definition.AssetsPath,
-                    resource);
+            //Manifest.XmlManifestReader manifest =
+            //    new Manifest.XmlManifestReader(definition.ManifestPath, true);
+            //Manifest.ManifestDocument manifestDocument = manifest.Load();
 
+            //if (manifestDocument?.Scripts?.Count > 0)
+            //    RegisterStyles(page, definition, manifestDocument);
 
-                switch (resource.Type)
-                {
-                    case ResourceType.StyleSheet:
-
-                        RegisterStyleSheet(
-                            page,
-                            path,
-                            resource);
-
-                        break;
-
-
-                    case ResourceType.Script:
-
-                        RegisterScript(
-                            page,
-                            path,
-                            resource);
-
-                        break;
-                }
-            }
+            //if (manifestDocument?.StyleSheets?.Count > 0)
+            //    RegisterScripts(page, definition, manifestDocument);
         }
 
 
 
-        private static void RegisterStyleSheet(
-            Page page,
-            string path,
-            ResourceItem resource)
-        {
-            ClientResourceManager.RegisterStyleSheet(
-                page,
-                path,
-                resource.Priority,
-                GetProvider(resource.Location));
-        }
+        //private static void RegisterStyles(
+        //    Page page,
+        //    SkinDefinition definition,
+        //    ManifestDocument manifest)
+        //{
+        //    foreach (var style in manifest.StyleSheets)
+        //    {
+        //        ClientResourceManager.RegisterStyleSheet(
+        //            page,
+        //            ResolvePath(
+        //                style.Path,
+        //                style.Version),
+        //            style.Priority,
+        //            style.Provider);
+        //    }
+        //}
 
 
+        //private static void RegisterScripts(
+        //    Page page,
+        //    SkinDefinition definition,
+        //    ManifestDocument manifest)
+        //{
+        //    foreach (var script in manifest.Scripts)
+        //    {
+        //        ClientResourceManager.RegisterScript(
+        //            page,
+        //            ResolvePath(
+        //                script.Path,
+        //                script.Version),
+        //            script.Priority,
+        //            script.Provider);
+        //    }
+        //}
 
-        private static void RegisterScript(
-            Page page,
-            string path,
-            ResourceItem resource)
-        {
-            ClientResourceManager.RegisterScript(
-                page,
-                path,
-                resource.Priority,
-                GetProvider(resource.Location));
-        }
+        //private static string ResolvePath(
+        //    string path,
+        //    string version)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(version))
+        //    {
+        //        path += "?v=" + version;
+        //    }
 
-
-
-        private static string ResolvePath(
-            string assetsPath,
-            ResourceItem resource)
-        {
-            var path = VirtualPathUtility.Combine(
-                assetsPath,
-                resource.Path);
-
-
-            if (!string.IsNullOrWhiteSpace(resource.Version))
-            {
-                path += "?v=" + resource.Version;
-            }
-
-
-            return path;
-        }
-
-
-
-        private static string GetProvider(
-            ResourceLocation location)
-        {
-            switch (location)
-            {
-                case ResourceLocation.Footer:
-
-                    return DnnFormBottomProvider.DefaultName;
-
-
-                default:
-
-                    return DnnPageHeaderProvider.DefaultName;
-            }
-        }
+        //    return path;
+        //}
     }
 }

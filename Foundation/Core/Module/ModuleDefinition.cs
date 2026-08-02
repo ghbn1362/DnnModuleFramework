@@ -62,5 +62,13 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public string MenuTemplatePath =>
             $"~{ModuleDirectory}{Constants.ModuleSkinMenuPath}";
+
+        public string SkinManifestFile
+            => Constants.SkinManifestName;
+
+        public string SkinManifestPath
+            => $"{ControlPath}{Constants.SkinDirectory}{SkinManifestFile}".MapPath();
+
+        public bool RegisterPersonaBarCss => true;
     }
 }

@@ -4,6 +4,13 @@ namespace DotNetNuke.Modules.Foundation.Services
 {
     public interface IResourceService
     {
-        void ImportFromManifest(string template, string skin, ref int cssPriority, ref int jsPriority, Page page, DotNetNuke.Entities.Modules.ModuleInfo moduleConfig, DotNetNuke.Entities.Portals.PortalSettings portalSettings, IEnvironmentService environmentService);
+        void ImportFromManifest(
+            string manifestPath
+            , ref int cssPriority
+            , ref int jsPriority
+            , System.Web.UI.Page page
+            , string modulePath
+            , int moduleId
+            , IEnvironmentService env);
     }
 }

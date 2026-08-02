@@ -27,5 +27,7 @@ namespace DotNetNuke.Modules.Foundation.Manifest
         public bool IsTablet { get; internal set; }
         public string Browser { get; internal set; }
 
+
+        public string Version { get; internal set; }
     }
 }

@@ -1830,6 +1830,38 @@ namespace DotNetNuke.Modules.Foundation
             return str.Contains("?") ? str.Substring(0, str.IndexOf("?")) : str;
         }
 
+        public static string DirectoryPath(this string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return string.Empty;
+
+            path = path.Replace('\\', '/');
+
+            if (path.EndsWith("/"))
+                return path;
+
+            int index = path.LastIndexOf('/');
+
+            if (index < 0)
+                return string.Empty;
+
+            return path.Substring(0, index + 1);
+        }
+
+        public static string ToAppRelativePath(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return str;
+            str = str.Replace(@"\", "/");
+            var lower = str.ToLowerInvariant();
+            if (lower.Contains("/portals/")) str = str.Substring(lower.IndexOf("/portals/"));
+            else if (lower.Contains("portals/")) str = str.Substring(lower.IndexOf("portals/"));
+            if (lower.Contains("/desktopmodules/")) str = str.Substring(lower.IndexOf("/desktopmodules/"));
+            else if (lower.Contains("desktopmodules/")) str = str.Substring(lower.IndexOf("desktopmodules/"));
+
+            if (str.StartsWith("/")) str = str.Substring(1);
+            return "~/" + str;
+        }
+
         #endregion
 
         #region JSON decode helpers previously present
