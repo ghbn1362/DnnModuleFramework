@@ -9,6 +9,8 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Modules.Foundation.Services;
 using DotNetNuke.Modules.Foundation.Core;
 using System.IO;
+using DotNetNuke.Modules.Foundation.Services.Infrastructure;
+using DotNetNuke.Modules.Foundation.Services.Contracts;
 
 namespace DotNetNuke.Modules.Foundation.Core.Module
 {
@@ -30,13 +32,15 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public ModuleBase()
         {
-            TemplateService = ServiceFactory.Get<ITemplateService>(Definition);
-            TokenService = ServiceFactory.Get<ITokenService>(Definition);
-            ResourceService = ServiceFactory.Get<IResourceService>(Definition);
-            EnvironmentService = ServiceFactory.Get<IEnvironmentService>(Definition);
-            DeviceDetectionService = ServiceFactory.Get<IDeviceDetectionService>(Definition);
-            LocalizationService = ServiceFactory.Get<ILocalizationService>(Definition);
-            DashboardService = ServiceFactory.Get<IDashboardService>(Definition);
+            // Resolve services from the DI container (ServiceProviderAccessor).
+            // Fallback to ServiceFactory if DI is not configured yet.
+            TemplateService = ServiceProviderAccessor.GetService<ITemplateService>() ?? ServiceFactory.Get<ITemplateService>(Definition);
+            TokenService = ServiceProviderAccessor.GetService<ITokenService>() ?? ServiceFactory.Get<ITokenService>(Definition);
+            ResourceService = ServiceProviderAccessor.GetService<IResourceService>() ?? ServiceFactory.Get<IResourceService>(Definition);
+            EnvironmentService = ServiceProviderAccessor.GetService<IEnvironmentService>() ?? ServiceFactory.Get<IEnvironmentService>(Definition);
+            DeviceDetectionService = ServiceProviderAccessor.GetService<IDeviceDetectionService>() ?? ServiceFactory.Get<IDeviceDetectionService>(Definition);
+            LocalizationService = ServiceProviderAccessor.GetService<ILocalizationService>() ?? ServiceFactory.Get<ILocalizationService>(Definition);
+            DashboardService = ServiceProviderAccessor.GetService<IDashboardService>() ?? ServiceFactory.Get<IDashboardService>(Definition);
         }
 
         protected virtual void Page_Init(EventArgs e) { }
