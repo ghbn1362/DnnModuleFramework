@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Xml;
+using System.IO;
 
 namespace DotNetNuke.Modules.Foundation.Manifest
 {
@@ -15,6 +16,14 @@ namespace DotNetNuke.Modules.Foundation.Manifest
         public XmlManifestReader(string path,bool isDashboard)
         {
             _document.Load(path);
+            IsDashboard = isDashboard;
+        }
+
+        // New constructor to support reading from Stream
+        public XmlManifestReader(Stream stream, bool isDashboard)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            _document.Load(stream);
             IsDashboard = isDashboard;
         }
 
