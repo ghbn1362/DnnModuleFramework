@@ -20,7 +20,11 @@ namespace DotNetNuke.Modules.Foundation.Services
 
         public string LastRenderedTemplateFilePath { get; private set; } = string.Empty;
 
-        public string LoadTemplatesInHtml(string html, string skin, PortalSettings portalSettings, PortalModuleBase moduleConfig)
+        public string LoadTemplatesInHtml(
+            string html
+            , string skin
+            , PortalSettings portalSettings
+            , PortalModuleBase moduleConfig)
         {
             if (string.IsNullOrEmpty(html)) return html;
 
@@ -33,7 +37,11 @@ namespace DotNetNuke.Modules.Foundation.Services
                 try
                 {
                     var usedSkin = string.IsNullOrEmpty(templateskin) ? skin : templateskin;
-                    templateHtml = RenderTemplateInternal(template, usedSkin, portalSettings, moduleConfig);
+                    templateHtml = RenderTemplateInternal(
+                        template
+                        , usedSkin
+                        , portalSettings
+                        , moduleConfig);
                 }
                 catch (Exception ex)
                 {
@@ -46,37 +54,22 @@ namespace DotNetNuke.Modules.Foundation.Services
             return html;
         }
 
-        private string RenderTemplateInternal(string template, string skin, PortalSettings portalSettings, PortalModuleBase moduleConfig)
+        private string RenderTemplateInternal(
+            string template
+            , string skin
+            , PortalSettings portalSettings
+            , PortalModuleBase moduleConfig)
         {
             try
             {
-                // compute directory similarly to previous implementation
-                string homeDir = portalSettings.HomeDirectoryMapPath;
-                if (homeDir.ToLower().LastIndexOf("portals") > 0)
-                    homeDir = homeDir.Substring(0, homeDir.ToLower().LastIndexOf("portals"));
-
-                homeDir = $"{homeDir}{_definition.ModuleDirectory}Templates/";
-                string templateFor = string.IsNullOrEmpty(template) ? "Dashboard" : template;
-
-                if (string.IsNullOrEmpty(template))
-                {
-                    var q = System.Web.HttpContext.Current.Request.QueryString;
-                    if (q["ctl"] != null) templateFor = q["ctl"].ToString();
-                    if (q["sp"] != null) templateFor = q["sp"].ToString();
-                }
-
-                homeDir += templateFor + "/";
-                homeDir = homeDir.Replace("/", @"\").Replace(@"\\", @"\");
-
-                if (!skin.EndsWith("/")) skin = skin + "/";
-
-                var indexCshtml = Path.Combine(homeDir, skin, "index.cshtml");
+                string directory = Common.TemplateMapPath(_definition.ModuleDirectory, template, skin);
+                string indexCshtml = Path.Combine(directory, "index.cshtml");
                 string result = string.Empty;
 
                 if (File.Exists(indexCshtml))
                 {
                     LastRenderedTemplateFilePath = indexCshtml;
-                    // TODO: ensure RazorEngine is referenced in the project or replace with your templating engine
+
                     var templatePath = "~/" + indexCshtml.Substring(indexCshtml.IndexOf("DesktopModules")).Replace("\\", "/");
                     var razorEngine = new RazorEngine(templatePath, null, null); // requires reference
                     using (var writer = new StringWriter())
@@ -123,9 +116,49 @@ namespace DotNetNuke.Modules.Foundation.Services
             };
         }
 
-        public string RenderTemplate(string templateName, string skin, PortalSettings portalSettings, PortalModuleBase moduleConfig)
+        public string RenderTemplate(
+            string templateName
+            , string skin
+            , PortalSettings portalSettings
+            , PortalModuleBase moduleConfig)
         {
             return RenderTemplateInternal(templateName, skin, portalSettings, moduleConfig);
         }
+
+        //protected string LoadTemplate(string html)
+        //{
+        //    if (string.IsNullOrEmpty(html)) return html;
+
+        //    // load templates
+        //    html = LoadTemplatesInHtml(html, Skin, PortalSettings, this) ?? html;
+
+        //    // import resources referenced by template
+        //    ResourceService?.ImportFromManifest(
+        //        Common.TemplateManifestMapPath(Definition.ModuleDirectory, Template, Skin)
+        //        , ref CssPriority
+        //        , ref JsPriority
+        //        , Page
+        //        , ModuleConfiguration?.ModuleControl?.ControlSrc
+        //        , ModuleConfiguration.ModuleID
+        //        , EnvironmentService);
+
+        //    // run localization (template-specific resource file handled inside TemplateService or LocalizationService)
+        //    html = LocalizationService?.LocalizeHtml(html, Settings, TemplateService?.LastRenderedTemplateFilePath, LocalResourceFile) ?? html;
+
+        //    // token replacements
+        //    html = TokenService?.ReplaceAllTokens(html, Request, UserInfo, PortalSettings, Settings) ?? html;
+
+        //    // DotNetNuke TokenReplace (keeps original behavior)
+        //    var tokenReplace = new DotNetNuke.Services.Tokens.TokenReplace
+        //    {
+        //        User = UserInfo,
+        //        PortalSettings = PortalSettings,
+        //        ModuleId = ModuleId
+        //    };
+        //    html = tokenReplace.ReplaceEnvironmentTokens(html);
+
+        //    return html;
+        //}
+
     }
 }

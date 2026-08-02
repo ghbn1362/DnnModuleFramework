@@ -589,5 +589,53 @@ namespace DotNetNuke.Modules.Foundation
             return result;
         }
 
+
+        public static string TemplateMapPath(string moduleDirectory, string template, string skin)
+        {
+            try
+            {
+                string directoryMapPath = $"{moduleDirectory}Templates/".MapPath();
+                string templateFor = string.IsNullOrEmpty(template) ? "Dashboard" : template;
+                skin = skin ?? "default";
+                if (!skin.EndsWith("/")) skin = skin + "/";
+
+                if (string.IsNullOrEmpty(template))
+                {
+                    var q = System.Web.HttpContext.Current?.Request?.QueryString;
+                    if (q != null)
+                    {
+                        if (q["ctl"] != null)
+                            templateFor = q["ctl"].ToString();
+                        if (q["sp"] != null)
+                            templateFor = q["sp"].ToString();
+                    }
+                }
+
+                directoryMapPath += templateFor + "/"+ skin;
+                directoryMapPath = directoryMapPath.Replace("/", @"\").Replace(@"\\", @"\");
+
+                return directoryMapPath;
+            }
+            catch (Exception ex)
+            {
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
+                return string.Empty;
+            }
+        }
+        public static string TemplateManifestMapPath(string moduleDirectory, string template, string skin)
+        {
+            try
+            {
+
+                string templateMapPath = TemplateMapPath(moduleDirectory, template, skin);
+                return Path.Combine(templateMapPath, Constants.TemplateManifestName);
+            }
+            catch (Exception ex)
+            {
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
+                return string.Empty;
+            }
+        }
+
     }
 }

@@ -123,39 +123,5 @@ namespace DotNetNuke.Modules.Foundation
             }
         }
         protected string TokenToday(string html) => TokenService?.TokenToday(html) ?? html;
-        protected string LoadTemplate(string html)
-        {
-            if (string.IsNullOrEmpty(html)) return html;
-
-            // load templates
-            html = TemplateService?.LoadTemplatesInHtml(html, Skin, PortalSettings, this) ?? html;
-
-            // import resources referenced by template
-            ResourceService?.ImportFromManifest(
-                string.Empty
-                , ref CssPriority
-                , ref JsPriority
-                , Page
-                , ModuleConfiguration?.ModuleControl?.ControlSrc
-                , ModuleConfiguration.ModuleID
-                , EnvironmentService);
-
-            // run localization (template-specific resource file handled inside TemplateService or LocalizationService)
-            html = LocalizationService?.LocalizeHtml(html, Settings, TemplateService?.LastRenderedTemplateFilePath, LocalResourceFile) ?? html;
-
-            // token replacements
-            html = TokenService?.ReplaceAllTokens(html, Request, UserInfo, PortalSettings, Settings) ?? html;
-
-            // DotNetNuke TokenReplace (keeps original behavior)
-            var tokenReplace = new DotNetNuke.Services.Tokens.TokenReplace
-            {
-                User = UserInfo,
-                PortalSettings = PortalSettings,
-                ModuleId = ModuleId
-            };
-            html = tokenReplace.ReplaceEnvironmentTokens(html);
-
-            return html;
-        }
     }
 }

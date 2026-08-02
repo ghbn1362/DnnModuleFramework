@@ -25,15 +25,13 @@ namespace DotNetNuke.Modules.Foundation.Services
             , bool tokenization
             , bool isScript)
         {
-            // Similar logic to previous GetResolvedPath with tokenization handling.
             if (string.IsNullOrEmpty(manifestAssetPath)) return null;
             if (manifestAssetPath.IsUrl()) return manifestAssetPath;
 
-            //string templatepath = TemplateManifestMapPath(templateName);
             string result;
 
             if (manifestAssetPath.StartsWith("[G]"))
-                result = VirtualPathUtility.ToAbsolute(modulePath.DirectoryPath()) + manifestAssetPath.Replace("[G]", "");
+                result = $"{modulePath.DirectoryPath()}{manifestAssetPath.Replace("[G]", "")}".ResolveUrl();
             else
             {
                 result = $"{manifestPath.DirectoryPath()}{manifestAssetPath}".ResolveUrl();
@@ -54,37 +52,6 @@ namespace DotNetNuke.Modules.Foundation.Services
             }
 
             return result;
-        }
-
-        public string TemplateManifestMapPath(string template)
-        {
-            try
-            {
-                string directoryMapPath = $"{_definition.ModuleDirectory}Templates/".MapPath();
-                string templateFor = string.IsNullOrEmpty(template) ? "Dashboard" : template;
-
-                if (string.IsNullOrEmpty(template))
-                {
-                    var q = System.Web.HttpContext.Current?.Request?.QueryString;
-                    if (q != null)
-                    {
-                        if (q["ctl"] != null)
-                            templateFor = q["ctl"].ToString();
-                        if (q["sp"] != null)
-                            templateFor = q["sp"].ToString();
-                    }
-                }
-
-                directoryMapPath += templateFor + "/";
-                directoryMapPath = directoryMapPath.Replace("/", @"\").Replace(@"\\", @"\");
-
-                return Path.Combine(directoryMapPath, Constants.TemplateManifestName);
-            }
-            catch(Exception ex)
-            {
-                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
-                return string.Empty;
-            }
         }
     }
 }

@@ -30,7 +30,6 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public ModuleBase()
         {
-            // resolve services via ServiceFactory (fallback). Replace with DI when available.
             TemplateService = ServiceFactory.Get<ITemplateService>(Definition);
             TokenService = ServiceFactory.Get<ITokenService>(Definition);
             ResourceService = ServiceFactory.Get<IResourceService>(Definition);
@@ -73,11 +72,10 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
             base.OnInit(e);
 
-            // import resources from manifest for current template
             try
             {
                 ResourceService?.ImportFromManifest(
-                    string.Empty
+                    Common.TemplateManifestMapPath(Definition.ModuleDirectory, "", Skin)
                     , ref CssPriority
                     , ref JsPriority
                     , Page

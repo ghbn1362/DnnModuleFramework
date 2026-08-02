@@ -13,7 +13,5 @@ namespace DotNetNuke.Modules.Foundation.Services
             , int moduleId
             , bool tokenization
             , bool isScript);
-
-        string TemplateManifestMapPath(string template);
     }
 }
