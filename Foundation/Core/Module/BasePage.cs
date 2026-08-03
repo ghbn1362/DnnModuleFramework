@@ -87,7 +87,7 @@ namespace DotNetNuke.Modules.Foundation
                         html = LocalizationService?.LocalizeHtml(html, Settings, string.Empty, LocalResourceFile) ?? html;
                     }
 
-                    html = TokenService?.ReplaceAllTokens(html, Request, UserInfo, PortalSettings, Settings) ?? html;
+                    html = TokenService?.ReplaceAllTokens(html, Request, Settings) ?? html;
 
                     var tokenReplace = new DotNetNuke.Services.Tokens.TokenReplace
                     {

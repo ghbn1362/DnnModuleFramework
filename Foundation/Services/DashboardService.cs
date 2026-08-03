@@ -18,8 +18,6 @@ namespace DotNetNuke.Modules.Foundation.Services
 
         public void EnsureSkinAndDashboard(
             System.Web.UI.Page page
-            , PortalModuleBase moduleConfig
-            , PortalSettings portalSettings
             , Hashtable settings)
         {
             // previous behavior: try to ensure dashboard skin when IsDashboard
@@ -29,19 +27,19 @@ namespace DotNetNuke.Modules.Foundation.Services
                 {
                     if (page.Request.Params["ctl"] == null)
                     {
-                        string SkinSrc = $"{moduleConfig.ControlPath}{Constants.SkinDirectory}{Constants.SkinName}";
-                        string ContainerSrc = $"{moduleConfig.ControlPath}{Constants.SkinDirectory}{Constants.ContainerName}";
+                        string SkinSrc = $"{_definition.ControlPath}{Constants.SkinDirectory}{Constants.SkinName}";
+                        string ContainerSrc = $"{_definition.ControlPath}{Constants.SkinDirectory}{Constants.ContainerName}";
 
                         // try original approach with ControlPath if available
                         if (File.Exists(SkinSrc.MapPath()))
                         {
-                            if (!portalSettings.ActiveTab.SkinSrc.EndsWith(Constants.SkinName))
+                            if (!_definition.PortalSettings.ActiveTab.SkinSrc.EndsWith(Constants.SkinName))
                             {
-                                portalSettings.ActiveTab.SkinSrc = SkinSrc;
-                                portalSettings.ActiveTab.ContainerSrc = ContainerSrc;
-                                portalSettings.ActiveTab.EndDate = DotNetNuke.Common.Utilities.Null.NullDate;
-                                DotNetNuke.Entities.Tabs.TabController.Instance.UpdateTab(portalSettings.ActiveTab);
-                                page.Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(portalSettings.ActiveTab.TabID));
+                                _definition.PortalSettings.ActiveTab.SkinSrc = SkinSrc;
+                                _definition.PortalSettings.ActiveTab.ContainerSrc = ContainerSrc;
+                                _definition.PortalSettings.ActiveTab.EndDate = DotNetNuke.Common.Utilities.Null.NullDate;
+                                DotNetNuke.Entities.Tabs.TabController.Instance.UpdateTab(_definition.PortalSettings.ActiveTab);
+                                page.Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(_definition.PortalSettings.ActiveTab.TabID));
                             }
                         }
                     }
@@ -50,21 +48,21 @@ namespace DotNetNuke.Modules.Foundation.Services
                         || !bool.Parse(settings[Constants.SettingName_HideAdminBorder].ToString())) 
                         && page.Request.Params["ctl"] == null)
                     {
-                        ModuleController.Instance.UpdateTabModuleSetting(moduleConfig.TabModuleId, Constants.SettingName_HideAdminBorder, "true");
+                        ModuleController.Instance.UpdateTabModuleSetting(_definition.TabModuleId, Constants.SettingName_HideAdminBorder, "true");
                         DotNetNuke.Common.Utilities.Config.Touch();
                         page.Response.Redirect(page.Request.Url.ToString());
                     }
 
-                    if (portalSettings.ActiveTab.Modules.Count > 1)
+                    if (_definition.PortalSettings.ActiveTab.Modules.Count > 1)
                     {
                         // remove other modules - keep original behavior
-                        var modules = ModuleController.Instance.GetTabModules(portalSettings.ActiveTab.TabID).Values;
+                        var modules = ModuleController.Instance.GetTabModules(_definition.PortalSettings.ActiveTab.TabID).Values;
                         foreach (var m in modules)
                         {
                             try
                             {
                                 if (!m.ModuleDefinition.DefinitionName.Trim().Equals(_definition.DefinitionName.Trim(), StringComparison.OrdinalIgnoreCase))
-                                    ModuleController.Instance.DeleteTabModule(portalSettings.ActiveTab.TabID, m.ModuleID, true);
+                                    ModuleController.Instance.DeleteTabModule(_definition.PortalSettings.ActiveTab.TabID, m.ModuleID, true);
                             }
                             catch { /* ignore deletion errors like original */ }
                         }

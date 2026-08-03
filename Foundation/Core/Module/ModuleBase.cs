@@ -32,6 +32,7 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
         {
             Definition.PortalSettings = PortalSettings;
             Definition.ModuleId = ModuleId;
+            Definition.TabModuleId = TabModuleId;
             Definition.LocalResourceFile = LocalResourceFile;
 
             TemplateService = ServiceFactory.Get<ITemplateService>(Definition);
@@ -65,7 +66,7 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
             }
 
             // keep compatibility: check skin and dashboard init
-            DashboardService?.EnsureSkinAndDashboard(Page, this, PortalSettings, Settings);
+            DashboardService?.EnsureSkinAndDashboard(Page, Settings);
 
             // register essential client script
             try

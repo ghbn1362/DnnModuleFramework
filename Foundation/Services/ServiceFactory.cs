@@ -4,7 +4,7 @@ using DotNetNuke.Entities.Modules;
 
 namespace DotNetNuke.Modules.Foundation.Services
 {
-     public static class ServiceFactory
+    public static class ServiceFactory
     {
         private static readonly Dictionary<Type, object> _overrides = new Dictionary<Type, object>();
 
@@ -20,7 +20,7 @@ namespace DotNetNuke.Modules.Foundation.Services
 
             // fallback to default concrete implementations
             if (typeof(TService) == typeof(ITemplateService)) return new TemplateService(definition) as TService;
-            if (typeof(TService) == typeof(ITokenService)) return new TokenService() as TService;
+            if (typeof(TService) == typeof(ITokenService)) return new TokenService(definition) as TService;
             if (typeof(TService) == typeof(IResourceService)) return new ResourceService(definition) as TService;
             if (typeof(TService) == typeof(IEnvironmentService)) return new EnvironmentService(definition) as TService;
             if (typeof(TService) == typeof(IDeviceDetectionService)) return new DeviceDetectionService() as TService;

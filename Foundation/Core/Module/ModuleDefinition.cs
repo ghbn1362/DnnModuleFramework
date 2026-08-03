@@ -18,6 +18,7 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public DotNetNuke.Entities.Portals.PortalSettings PortalSettings { get; set; }
         public int ModuleId { set; get; } = -1;
+        public int TabModuleId { set; get; } = -1;
         public string LocalResourceFile { set; get; }
 
 

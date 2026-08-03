@@ -11,6 +11,13 @@ namespace DotNetNuke.Modules.Foundation.Services
 {
     public class TokenService : ITokenService
     {
+        private readonly Core.Module.ModuleDefinition _definition;
+        public TokenService(Core.Module.ModuleDefinition definition)
+        {
+            _definition = definition;
+        }
+
+
         private static readonly Regex TodayRegex = new Regex(@"{{Today:(?<format>[^?]*?)(:(?<culture>[^?]*?))?}}", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
         private static readonly Regex QueryStringBlockRegex = new Regex(@"\{\{\#QueryString\s(?<param>[^?]*?)(\s(?<value>[^?]*?))?\}\}(?<content>((.|\n)*?))\{\{\/QueryString\}\}", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
         private static readonly Regex IsUserRegex = new Regex(@"\{\{\#IsUser\}\}(?<content>((.|\n)*?))\{\{\/IsUser\}\}", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -41,14 +48,17 @@ namespace DotNetNuke.Modules.Foundation.Services
             return html;
         }
 
-        public string ReplaceAllTokens(string html, HttpRequest request, UserInfo user, PortalSettings portalSettings, Hashtable settings)
+        public string ReplaceAllTokens(
+            string html
+            , HttpRequest request
+            , Hashtable settings)
         {
             if (string.IsNullOrEmpty(html)) return html;
 
             html = TokenToday(html);
-            html = TokenIsUser(html, user);
-            html = TokenIsEditor(html, user, portalSettings);
-            html = TokenIsInRole(html, user, portalSettings);
+            html = TokenIsUser(html);
+            html = TokenIsEditor(html);
+            html = TokenIsInRole(html);
             html = TokenSettings(html, settings);
             html = TokenRequest(html, request);
             html = TokenQueryString(html, request);
@@ -56,7 +66,7 @@ namespace DotNetNuke.Modules.Foundation.Services
             return html;
         }
 
-        private string TokenIsUser(string template, UserInfo user)
+        private string TokenIsUser(string template)
         {
             foreach (Match match in IsUserRegex.Matches(template))
             {
@@ -64,13 +74,14 @@ namespace DotNetNuke.Modules.Foundation.Services
                 var cond = Conditions.Instance(content);
                 var incase = cond.InCase;
                 var otherwise = cond.OtherWise;
-                bool isUser = user != null && user.UserID > 0;
+                bool isUser = _definition.PortalSettings?.UserInfo.UserID > 0;
                 template = template.Replace(match.Value, isUser ? (!string.IsNullOrEmpty(incase) ? incase : content) : (!string.IsNullOrEmpty(otherwise) ? otherwise : string.Empty));
             }
             return template;
         }
 
-        private string TokenIsEditor(string template, UserInfo user, PortalSettings portalSettings)
+        private string TokenIsEditor(
+            string template)
         {
             foreach (Match match in IsEditorRegex.Matches(template))
             {
@@ -79,18 +90,17 @@ namespace DotNetNuke.Modules.Foundation.Services
                 var incase = cond.InCase;
                 var otherwise = cond.OtherWise;
 
-                bool isEditor = (user != null) &&
-                                (user.UserID > 0) &&
-                                ((user.IsSuperUser) ||
-                                 (user.IsInRole(portalSettings.AdministratorRoleName)) ||
-                                 (DotNetNuke.Security.Permissions.TabPermissionController.CanAddContentToPage(portalSettings.ActiveTab)));
+                bool isEditor = (_definition.PortalSettings?.UserInfo?.UserID > 0) &&
+                                ((_definition.PortalSettings.UserInfo.IsSuperUser) ||
+                                 (_definition.PortalSettings.UserInfo.IsInRole(_definition.PortalSettings.AdministratorRoleName)) ||
+                                 (DotNetNuke.Security.Permissions.TabPermissionController.CanAddContentToPage(_definition.PortalSettings.ActiveTab)));
 
                 template = template.Replace(match.Value, isEditor ? (!string.IsNullOrEmpty(incase) ? incase : content) : (!string.IsNullOrEmpty(otherwise) ? otherwise : string.Empty));
             }
             return template;
         }
 
-        private string TokenIsInRole(string template, UserInfo user, PortalSettings portalSettings)
+        private string TokenIsInRole(string template)
         {
             while (template.ToLower().Contains("{#inrole"))
             {
@@ -101,7 +111,7 @@ namespace DotNetNuke.Modules.Foundation.Services
                 {
                     var condition = match.Groups["condition"].Value;
                     var content = match.Groups["content"].Value;
-                    bool correct = EvaluateRoleCondition(condition, user, portalSettings);
+                    bool correct = EvaluateRoleCondition(condition);
                     var cond = Conditions.Instance(content);
                     var incase = cond.InCase;
                     var otherwise = cond.OtherWise;
@@ -112,10 +122,10 @@ namespace DotNetNuke.Modules.Foundation.Services
             return template;
         }
 
-        private bool EvaluateRoleCondition(string condition, UserInfo user, PortalSettings portalSettings)
+        private bool EvaluateRoleCondition(string condition)
         {
             if (string.IsNullOrWhiteSpace(condition)) return false;
-            if (user == null) return false;
+            if (_definition.PortalSettings?.UserInfo == null) return false;
 
             if (condition.Contains("&&"))
             {
@@ -125,9 +135,9 @@ namespace DotNetNuke.Modules.Foundation.Services
                 {
                     var term = part.Trim();
                     if (term.StartsWith("!"))
-                        correct = correct && (!IsInRole(user, term.Substring(1).Trim(), portalSettings));
+                        correct = correct && (!IsInRole(term.Substring(1).Trim()));
                     else
-                        correct = correct && IsInRole(user, term, portalSettings);
+                        correct = correct && IsInRole(term);
                 }
                 return correct;
             }
@@ -139,23 +149,23 @@ namespace DotNetNuke.Modules.Foundation.Services
                 {
                     var term = part.Trim();
                     if (term.StartsWith("!"))
-                        correct = correct || (!IsInRole(user, term.Substring(1).Trim(), portalSettings));
+                        correct = correct || (!IsInRole(term.Substring(1).Trim()));
                     else
-                        correct = correct || IsInRole(user, term, portalSettings);
+                        correct = correct || IsInRole(term);
                 }
                 return correct;
             }
             else
             {
-                return IsInRole(user, condition.Trim(), portalSettings);
+                return IsInRole(condition.Trim());
             }
         }
 
-        private bool IsInRole(UserInfo user, string role, PortalSettings portalSettings)
+        private bool IsInRole(string role)
         {
-            if (string.IsNullOrEmpty(role) || user == null) return false;
-            if (user.IsInRole(portalSettings.AdministratorRoleName)) return true;
-            return user.IsInRole(role.Trim());
+            if (string.IsNullOrEmpty(role) || _definition.PortalSettings ?.UserInfo?.UserID < 1) return false;
+            if (_definition.PortalSettings.UserInfo.IsInRole(_definition.PortalSettings.AdministratorRoleName)) return true;
+            return _definition.PortalSettings.UserInfo.IsInRole(role.Trim());
         }
 
         private string TokenSettings(string template, Hashtable settings)

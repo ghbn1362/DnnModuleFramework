@@ -5,6 +5,8 @@ namespace DotNetNuke.Modules.Foundation.Services
 {
     public interface IDashboardService
     {
-        void EnsureSkinAndDashboard(System.Web.UI.Page page, PortalModuleBase moduleConfig, PortalSettings portalSettings, System.Collections.Hashtable settings);
+        void EnsureSkinAndDashboard(
+            System.Web.UI.Page page
+            , System.Collections.Hashtable settings);
     }
 }

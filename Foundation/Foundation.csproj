@@ -92,7 +92,7 @@
     <Compile Include="Core\Skin\SkinManager.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Manifest\IManifestReader.cs" />
+    <Compile Include="Manifest\interface\IManifestReader.cs" />
     <Compile Include="Manifest\ManifestDocument.cs" />
     <Compile Include="Manifest\ManifestNode.cs" />
     <Compile Include="Manifest\ManifestProperties.cs" />
