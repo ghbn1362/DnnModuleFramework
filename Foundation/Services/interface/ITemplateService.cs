@@ -6,7 +6,7 @@ namespace DotNetNuke.Modules.Foundation.Services
     public interface ITemplateService
     {
         string LastRenderedTemplateFilePath { get; }
-        string LoadTemplatesInHtml(string html, string skin, PortalSettings portalSettings, PortalModuleBase moduleConfig);
-        string RenderTemplate(string templateName, string skin, PortalSettings portalSettings, PortalModuleBase moduleConfig);
+        string LoadTemplatesInHtml(string html, string skin, Core.Module.TemplateModel model);
+        string RenderTemplate(string templateName, string skin, Core.Module.TemplateModel model);
     }
 }

@@ -7,6 +7,6 @@ namespace DotNetNuke.Modules.Foundation.Manifest
 {
     public interface IManifestReader
     {
-        ManifestDocument Load(string fileName);
+        ManifestDocument Load(string manifestPath, bool excludeDashboard);
     }
 }

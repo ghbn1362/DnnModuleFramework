@@ -89,7 +89,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Skin\ResourceManager.cs" />
     <Compile Include="Core\Skin\SkinManager.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -98,6 +97,7 @@
     <Compile Include="Manifest\ManifestNode.cs" />
     <Compile Include="Manifest\ManifestProperties.cs" />
     <Compile Include="Manifest\ManifestProperty.cs" />
+    <Compile Include="Manifest\ManifestReader.cs" />
     <Compile Include="Manifest\ManifestResource.cs" />
     <Compile Include="Manifest\ManifestScript.cs" />
     <Compile Include="Manifest\ManifestStyleSheet.cs" />
@@ -117,6 +117,7 @@
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\interface\IDashboardService.cs" />
     <Compile Include="Services\interface\ILocalizationService.cs" />
+    <Compile Include="Services\interface\ITemplateModelFactory.cs" />
     <Compile Include="Services\LocalizationService.cs" />
     <Compile Include="Services\DeviceDetectionService.cs" />
     <Compile Include="Services\interface\IDeviceDetectionService.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Services\ResourceService.cs" />
     <Compile Include="Services\interface\IResourceService.cs" />
     <Compile Include="Services\ServiceFactory.cs" />
+    <Compile Include="Services\TemplateModelFactory.cs" />
     <Compile Include="Services\TokenService.cs" />
     <Compile Include="Services\interface\ITokenService.cs" />
     <Compile Include="Services\TemplateService.cs" />

@@ -28,13 +28,10 @@ namespace DotNetNuke.Modules.Foundation.Services
         {
             try
             {
-                //var manifestPath = env.TemplateManifestMapPath(template);
-
                 if (string.IsNullOrEmpty(manifestPath) || !File.Exists(manifestPath)) return;
 
-                Manifest.XmlManifestReader manifest =
-                    new Manifest.XmlManifestReader(manifestPath, _definition.UseDashboardSkin);
-                Manifest.ManifestDocument manifestDocument = manifest.Load();
+                Manifest.IManifestReader manifest = new Manifest.ManifestReader();
+                Manifest.ManifestDocument manifestDocument = manifest.Load(manifestPath, _definition.UseDashboardSkin);
 
                 if (manifestDocument?.Scripts?.Count > 0)
                     foreach (var script in manifestDocument.Scripts)

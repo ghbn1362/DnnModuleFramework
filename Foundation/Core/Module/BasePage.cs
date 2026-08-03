@@ -72,7 +72,10 @@ namespace DotNetNuke.Modules.Foundation
             {
                 try
                 {
-                    string html = TemplateService.RenderTemplate(string.Empty, Skin, PortalSettings, this);
+                    ITemplateModelFactory templateModel = ServiceFactory.Get<ITemplateModelFactory>(Definition);
+                    Core.Module.TemplateModel model = templateModel.Create(Definition);
+
+                    string html = TemplateService.RenderTemplate(string.Empty, Skin, model);
 
                     if (!string.IsNullOrEmpty(TemplateService.LastRenderedTemplateFilePath))
                     {

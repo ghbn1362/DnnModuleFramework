@@ -23,8 +23,7 @@ namespace DotNetNuke.Modules.Foundation.Services
         public string LoadTemplatesInHtml(
             string html
             , string skin
-            , PortalSettings portalSettings
-            , PortalModuleBase moduleConfig)
+            , Core.Module.TemplateModel model)
         {
             if (string.IsNullOrEmpty(html)) return html;
 
@@ -40,8 +39,7 @@ namespace DotNetNuke.Modules.Foundation.Services
                     templateHtml = RenderTemplateInternal(
                         template
                         , usedSkin
-                        , portalSettings
-                        , moduleConfig);
+                        , model);
                 }
                 catch (Exception ex)
                 {
@@ -57,8 +55,7 @@ namespace DotNetNuke.Modules.Foundation.Services
         private string RenderTemplateInternal(
             string template
             , string skin
-            , PortalSettings portalSettings
-            , PortalModuleBase moduleConfig)
+            , Core.Module.TemplateModel model)
         {
             try
             {
@@ -74,7 +71,6 @@ namespace DotNetNuke.Modules.Foundation.Services
                     var razorEngine = new RazorEngine(templatePath, null, null); // requires reference
                     using (var writer = new StringWriter())
                     {
-                        var model = CreateModel(portalSettings, moduleConfig);
                         razorEngine.Render<dynamic>(writer, model);
                         result = writer.ToString().Replace("[at]", "@");
                     }
@@ -99,66 +95,13 @@ namespace DotNetNuke.Modules.Foundation.Services
             }
         }
 
-        private Core.Module.TemplateModel CreateModel(PortalSettings portalSettings, PortalModuleBase moduleConfig)
-        {
-            return new Core.Module.TemplateModel
-            {
-                IsAdmin = System.Web.HttpContext.Current?.User?.IsInRole(portalSettings.AdministratorRoleName) ?? false,
-                IsSuperUser = portalSettings?.UserInfo?.IsSuperUser ?? false,
-                IsEdit = DotNetNuke.Security.Permissions.TabPermissionController.CanAddContentToPage(portalSettings.ActiveTab),
-                TabId = portalSettings.ActiveTab.TabID,
-                ModuleId = moduleConfig?.ModuleId ?? -1,
-                PortalId = portalSettings.PortalId,
-                UserId = portalSettings.UserInfo?.UserID ?? -1,
-                Page = "Dashboard",
-                LocalResourceFile = moduleConfig?.LocalResourceFile,
-                PortalSettings = portalSettings
-            };
-        }
 
         public string RenderTemplate(
             string templateName
             , string skin
-            , PortalSettings portalSettings
-            , PortalModuleBase moduleConfig)
+            , Core.Module.TemplateModel model)
         {
-            return RenderTemplateInternal(templateName, skin, portalSettings, moduleConfig);
+            return RenderTemplateInternal(templateName, skin, model);
         }
-
-        //protected string LoadTemplate(string html)
-        //{
-        //    if (string.IsNullOrEmpty(html)) return html;
-
-        //    // load templates
-        //    html = LoadTemplatesInHtml(html, Skin, PortalSettings, this) ?? html;
-
-        //    // import resources referenced by template
-        //    ResourceService?.ImportFromManifest(
-        //        Common.TemplateManifestMapPath(Definition.ModuleDirectory, Template, Skin)
-        //        , ref CssPriority
-        //        , ref JsPriority
-        //        , Page
-        //        , ModuleConfiguration?.ModuleControl?.ControlSrc
-        //        , ModuleConfiguration.ModuleID
-        //        , EnvironmentService);
-
-        //    // run localization (template-specific resource file handled inside TemplateService or LocalizationService)
-        //    html = LocalizationService?.LocalizeHtml(html, Settings, TemplateService?.LastRenderedTemplateFilePath, LocalResourceFile) ?? html;
-
-        //    // token replacements
-        //    html = TokenService?.ReplaceAllTokens(html, Request, UserInfo, PortalSettings, Settings) ?? html;
-
-        //    // DotNetNuke TokenReplace (keeps original behavior)
-        //    var tokenReplace = new DotNetNuke.Services.Tokens.TokenReplace
-        //    {
-        //        User = UserInfo,
-        //        PortalSettings = PortalSettings,
-        //        ModuleId = ModuleId
-        //    };
-        //    html = tokenReplace.ReplaceEnvironmentTokens(html);
-
-        //    return html;
-        //}
-
     }
 }

@@ -30,6 +30,10 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public ModuleBase()
         {
+            Definition.PortalSettings = PortalSettings;
+            Definition.ModuleId = ModuleId;
+            Definition.LocalResourceFile = LocalResourceFile;
+
             TemplateService = ServiceFactory.Get<ITemplateService>(Definition);
             TokenService = ServiceFactory.Get<ITokenService>(Definition);
             ResourceService = ServiceFactory.Get<IResourceService>(Definition);

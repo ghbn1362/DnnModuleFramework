@@ -15,6 +15,13 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
         public string FriendlyName { get; }
         public bool UseDashboardSkin { get; }
 
+
+        public DotNetNuke.Entities.Portals.PortalSettings PortalSettings { get; set; }
+        public int ModuleId { set; get; } = -1;
+        public string LocalResourceFile { set; get; }
+
+
+
         public ModuleDefinition(
             string moduleName,
             string definitionName,
@@ -67,6 +74,24 @@ namespace DotNetNuke.Modules.Foundation.Core.Module
 
         public string SkinManifestPath
             => $"{ControlPath}{Constants.SkinDirectory}{SkinManifestFile}".MapPath();
+
+
+        public int PortalId
+            => PortalSettings.PortalId;
+        public int TabId
+            => PortalSettings.ActiveTab.TabID;
+        public int UserId
+            => PortalSettings.UserInfo?.UserID ?? -1;
+
+
+
+        public bool IsSuperUser
+            => PortalSettings?.UserInfo?.IsSuperUser ?? false;
+        public bool IsAdmin
+            => PortalSettings.UserInfo?.IsInRole(PortalSettings.AdministratorRoleName) ?? false;
+        public bool IsEdit
+            => DotNetNuke.Security.Permissions.TabPermissionController.CanAddContentToPage(PortalSettings.ActiveTab);
+
 
         public bool RegisterPersonaBarCss => true;
     }

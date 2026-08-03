@@ -26,6 +26,7 @@ namespace DotNetNuke.Modules.Foundation.Services
             if (typeof(TService) == typeof(IDeviceDetectionService)) return new DeviceDetectionService() as TService;
             if (typeof(TService) == typeof(ILocalizationService)) return new LocalizationService(definition) as TService;
             if (typeof(TService) == typeof(IDashboardService)) return new DashboardService(definition) as TService;
+            if (typeof(TService) == typeof(ITemplateModelFactory)) return new TemplateModelFactory() as TService;
 
             throw new InvalidOperationException($"No default implementation for {typeof(TService).FullName}");
         }
