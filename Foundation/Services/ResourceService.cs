@@ -109,7 +109,12 @@ namespace DotNetNuke.Modules.Foundation.Services
             }
         }
 
-        private void RegisterStyleSheet(System.Web.UI.Page page, string styleSheet, int priority, string provider, CultureInfo cultureInfo)
+        private void RegisterStyleSheet(
+            System.Web.UI.Page page
+            , string styleSheet
+            , int priority
+            , string provider
+            , CultureInfo cultureInfo)
         {
             try
             {

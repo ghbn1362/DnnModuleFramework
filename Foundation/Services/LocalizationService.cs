@@ -11,7 +11,11 @@ namespace DotNetNuke.Modules.Foundation.Services
         }
 
 
-        public string LocalizeHtml(string html, Hashtable moduleSettings, string templateLocalResourceFile, string localResourceFile)
+        public string LocalizeHtml(
+            string html
+            , Hashtable moduleSettings
+            , string templateLocalResourceFile
+            , string localResourceFile)
         {
             if (string.IsNullOrEmpty(html)) return html;
 
